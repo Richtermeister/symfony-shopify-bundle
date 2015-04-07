@@ -1,0 +1,24 @@
+{
+  "name": "codecloud/symfony-shopify-bundle",
+  "type": "library",
+  "description": "Makes Shopify app development a breeze",
+  "keywords": ["shopify", "symfony"],
+  "homepage": "https://github.com/codecloud/symfony-shopify-bundle",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "David Smith",
+      "email": "dave@code-cloud.uk",
+      "homepage": "http://code-cloud.uk",
+      "role": "Software Engineer"
+    }
+  ],
+  "require": {
+    "php": ">=5.3.0"
+  },
+  "autoload": {
+    "psr-0": {
+      "CodeCloudShopifyBundle": "src"
+    }
+  }
+}
