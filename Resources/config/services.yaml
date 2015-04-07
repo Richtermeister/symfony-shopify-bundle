@@ -1,0 +1,209 @@
+services:
+  codecloud_shopify.oauth.listener:
+    class: CodeCloud\Bundle\ShopifyBundle\Events\OAuthRequestListener
+    arguments:
+      - "%codecloud_shopify%"
+      - "@router"
+      - "@codecloud_shopify.client"
+    tags:
+       - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+
+  codecloud_shopify.guzzle.client:
+    class: GuzzleHttp\Client
+
+  codecloud_shopify.client:
+    class: CodeCloud\Bundle\ShopifyBundle\Api\ShopifyApiClient
+    arguments:
+     - "@codecloud_shopify.guzzle.client"
+
+  codecloud_shopify.signer:
+    class: CodeCloud\Bundle\ShopifyBundle\Auth\HmacSignature
+    arguments:
+      - "%codecloud_shopify%"
+
+  codecloud_shopify.oauth.authenticator:
+    class: CodeCloud\Bundle\ShopifyBundle\Auth\IncomingApiRequest\OAuthAuthenticator
+    arguments:
+      - "@codecloud_shopify.signer"
+      - "@codecloud_shopify.client"
+
+  codecloud_shopify.provider.store:
+    class: CodeCloud\Bundle\ShopifyBundle\Auth\Provider\ShopifyStoreProvider
+    arguments:
+      - "@doctrine.orm.default_entity_manager"
+      - "%codecloud_shopify%"
+
+  codecloud_shopify.mapper.application_charge:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\ApplicationChargeMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.article:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\ArticleMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.asset:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\AssetMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.blog:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\BlogMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.carrier_service:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\CarrierServiceMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.checkout:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\CheckoutMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.collect:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\CollectMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.comment:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\CommentMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.country:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\CountryMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.custom_collection:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\CustomCollectionMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.customer_address:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\CustomerAddressMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.customer:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\CustomerMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.customer_saved_search:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\CustomerSavedSearchMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.event:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\EventMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.fulfillment:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\FulFillmentMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.fulfillment_service:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\FulfillmentServiceMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.location:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\LocationMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.metafield:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\MetafieldMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.order:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\OrderMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.order_risks:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\OrderRisksMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.page:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\PageMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.policy:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\PolicyMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.product_image:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\ProductImageMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.product:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\ProductMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.product_variant:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\ProductVariantMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.province:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\ProvinceMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.recurring_application_charge:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\RecurringApplicationChargeMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.redirect:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\RedirectMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.refund:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\RefundMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.shop:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\ShopMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.smart_collection:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\SmartCollectionMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.theme:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\ThemeMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.transaction:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\TransactionMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.user:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\UserMapper
+    arguments:
+     - "@codecloud_shopify.client"
+
+  codecloud_shopify.mapper.webhook:
+    class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\WebhookMapper
+    arguments:
+     - "@codecloud_shopify.client"
