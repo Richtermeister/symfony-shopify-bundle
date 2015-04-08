@@ -22,6 +22,11 @@ class ShopifyApiClient
 	private $http;
 
 	/**
+	 * @var ShopifyStoreInterface
+	 */
+	private $shopifyStore;
+
+	/**
 	 * @var array|RequestModifier[]
 	 */
 	private $modifiers = array();
@@ -134,7 +139,16 @@ class ShopifyApiClient
 	 */
 	public function setShopifyStore(ShopifyStoreInterface $shopifyStore)
 	{
+		$this->shopifyStore = $shopifyStore;
 		$this->addModifier(new ShopNameRequestModifier($shopifyStore->getShopName()));
 		$this->addModifier(new AccessTokenRequestModifier($shopifyStore->getAccessToken()));
+	}
+
+	/**
+	 * @return ShopifyStoreInterface
+	 */
+	public function getStore()
+	{
+		return $this->shopifyStore;
 	}
 }

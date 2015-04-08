@@ -40,10 +40,10 @@ class HmacSignature
 		$timestamp = time();
 
 		return array(
-			'shop'      => $storeName,
+			'shop'      => (string)$storeName,
 			'timestamp' => $timestamp,
 			'hmac' => $this->generateHmac(array(
-				'shop'      => $storeName,
+				'shop'      => (string)$storeName,
 				'timestamp' => $timestamp
 			))
 		);

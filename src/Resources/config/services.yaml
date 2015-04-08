@@ -33,6 +33,13 @@ services:
       - "@doctrine.orm.default_entity_manager"
       - "%codecloud_shopify%"
 
+  codecloud_shopify.twig.extension.currentShopifyStore:
+    class: CodeCloud\Bundle\ShopifyBundle\Twig\Extension\ShopifyStore
+    tags:
+      - { name: twig.extension }
+    calls:
+      - [setContainer, ["@service_container"]]
+
   codecloud_shopify.mapper.application_charge:
     class: CodeCloud\Bundle\ShopifyBundle\EntityMapper\ApplicationChargeMapper
     arguments:
