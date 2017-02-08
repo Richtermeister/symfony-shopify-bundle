@@ -9,15 +9,15 @@ class HmacSignature
 	private $sharedSecret;
 
 	/**
-	 * @param array $shopifyConfig
+	 * @param array $config
 	 */
-	public function __construct(array $shopifyConfig)
+	public function __construct(array $config)
 	{
-		if (empty($shopifyConfig['credentials']['shared_secret'])) {
+		if (empty($config['oauth']['shared_secret'])) {
 			throw new \InvalidArgumentException('No shared secret has been defined');
 		}
 
-		$this->sharedSecret = $shopifyConfig['credentials']['shared_secret'];
+		$this->sharedSecret = $config['oauth']['shared_secret'];
 	}
 
 	/**

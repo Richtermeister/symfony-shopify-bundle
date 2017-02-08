@@ -15,28 +15,22 @@ class Configuration implements ConfigurationInterface
 	{
 		$treeBuilder = new TreeBuilder();
 
-		$rootNode = $treeBuilder->root('codecloud_shopify');
+		$rootNode = $treeBuilder->root('code_cloud_shopify');
 
 		$rootNode->children()
-						->arrayNode('credentials')->cannotBeEmpty()
-							->children()
-								->scalarNode('api_key')->cannotBeEmpty()->end()
-								->scalarNode('shared_secret')->cannotBeEmpty()->end()
-							->end()
-						->end()
-						->arrayNode('oauth')
-							->children()
-								->scalarNode('step1')->cannotBeEmpty()->end()
-								->scalarNode('step2')->cannotBeEmpty()->end()
-								->scalarNode('step3')->cannotBeEmpty()->end()
-							->end()
-						->end()
-						->arrayNode('twig')
-							->children()
-								->scalarNode('enabled_embedded_helpers')->end()
-							->end()
-						->end()
-				->end();
+                ->arrayNode('oauth')->isRequired()
+                    ->children()
+                        ->scalarNode('api_key')->isRequired()->cannotBeEmpty()->end()
+                        ->scalarNode('shared_secret')->isRequired()->cannotBeEmpty()->end()
+                        ->scalarNode('scope')->defaultValue('read_products')->end()
+                    ->end()
+                ->end()
+//                ->arrayNode('twig')
+//                    ->children()
+//                        ->scalarNode('enabled_embedded_helpers')->end()
+//                    ->end()
+//                ->end()
+        ->end();
 
 		return $treeBuilder;
 	}

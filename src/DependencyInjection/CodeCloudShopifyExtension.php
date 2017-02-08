@@ -9,16 +9,17 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 class CodeCloudShopifyExtension extends Extension
 {
 	/**
-	 * Loads the shopify configuration
-	 *
-	 * @param array            $config    An array of configuration values
-	 * @param ContainerBuilder $container A ContainerBuilder instance
-	 *
-	 * @throws \InvalidArgumentException When provided tag is not defined in this extension
+	 * {@inheritdoc}
 	 */
-	public function load(array $config, ContainerBuilder $container)
+	public function load(array $configs, ContainerBuilder $container)
 	{
-		$loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $configuration = new Configuration();
+        $config = $this->processConfiguration($configuration, $configs);
+
+        $container->setParameter('codecloud_shopify', $config);
+        $container->setParameter('codecloud_shopify.oauth', $config['oauth']);
+
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
 		$loader->load('services.yaml');
 	}
 }

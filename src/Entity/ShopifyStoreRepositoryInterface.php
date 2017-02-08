@@ -8,4 +8,11 @@ interface ShopifyStoreRepositoryInterface
 	 * @return ShopifyStoreInterface
 	 */
 	public function findOneByShopName($shopName);
+
+    /**
+     * @param string $shopName
+     * @param string $accessToken
+     * @return ShopifyStoreInterface
+     */
+    public function authenticateStore($shopName, $accessToken);
 }

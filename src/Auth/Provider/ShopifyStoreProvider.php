@@ -1,50 +1,39 @@
 <?php
 namespace CodeCloud\Bundle\ShopifyBundle\Auth\Provider;
 
-use Doctrine\ORM\EntityManager;
+use CodeCloud\Bundle\ShopifyBundle\Entity\ShopifyStoreInterface;
+use CodeCloud\Bundle\ShopifyBundle\Entity\ShopifyStoreRepositoryInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class ShopifyStoreProvider implements UserProviderInterface
 {
-	/**
-	 * @var string
-	 */
-	private $shopifyStoreEntityClassName;
+    /**
+     * @var ShopifyStoreRepositoryInterface
+     */
+	private $shops;
 
-	/**
-	 * @var EntityManager
-	 */
-	private $entityManager;
+    /**
+     * @param ShopifyStoreRepositoryInterface $shops
+     */
+    public function __construct(ShopifyStoreRepositoryInterface $shops)
+    {
+        $this->shops = $shops;
+    }
 
-	/**
-	 * @param EntityManager $entityManager
-	 * @param array $shopifyConfig
-	 */
-	public function __construct(EntityManager $entityManager, array $shopifyConfig)
-	{
-		if (empty($shopifyConfig['store_entity'])) {
-			throw new \InvalidArgumentException('codecloud_shopify.store_entity configuration option is missing');
-		}
-
-		$this->entityManager = $entityManager;
-		$this->shopifyStoreEntityClassName = $shopifyConfig['store_entity'];
-	}
-
-	/**
+    /**
 	 * @param string $username
-	 * @return \CodeCloud\Bundle\ShopifyBundle\Entity\ShopifyStoreInterface
+	 * @return ShopifyStoreInterface
 	 */
 	public function loadUserByUsername($username)
 	{
-		/** @var \CodeCloud\Bundle\ShopifyBundle\Entity\ShopifyStoreRepositoryInterface $repository */
-		$repository = $this->entityManager->getRepository($this->shopifyStoreEntityClassName);
-		return $repository->findOneByShopName($username);
+		return $this->shops->findOneByShopName($username);
 	}
 
-	/**
-	 * @return UserInterface
-	 */
+    /**
+     * @param UserInterface $user
+     * @return UserInterface
+     */
 	public function refreshUser(UserInterface $user)
 	{
 		return $this->loadUserByUsername($user->getUsername());
@@ -56,6 +45,6 @@ class ShopifyStoreProvider implements UserProviderInterface
 	 */
 	public function supportsClass($class)
 	{
-		return $class === $this->shopifyStoreEntityClassName;
+		return $class instanceof ShopifyStoreInterface;
 	}
 }

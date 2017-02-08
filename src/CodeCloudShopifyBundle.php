@@ -5,5 +5,5 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class CodeCloudShopifyBundle extends Bundle
 {
-	
+
 }

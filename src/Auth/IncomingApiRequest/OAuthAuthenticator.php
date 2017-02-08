@@ -1,105 +1,90 @@
 <?php
+
 namespace CodeCloud\Bundle\ShopifyBundle\Auth\IncomingApiRequest;
 
-use CodeCloud\Bundle\ShopifyBundle\Api\ShopifyApiClient;
 use CodeCloud\Bundle\ShopifyBundle\Auth\HmacSignature;
+use CodeCloud\Bundle\ShopifyBundle\Entity\ShopifyStoreRepositoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Core\Authentication\SimplePreAuthenticatorInterface;
-use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
-use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 
-class OAuthAuthenticator implements SimplePreAuthenticatorInterface, AuthenticationFailureHandlerInterface {
-
+class OAuthAuthenticator extends AbstractGuardAuthenticator
+{
 	/**
 	 * @var HmacSignature
 	 */
 	private $signatureVerifier;
 
-	/**
-	 * @var ShopifyApiClient
-	 */
-	private $shopifyClient;
+    /**
+     * @var ShopifyStoreRepositoryInterface
+     */
+    private $shops;
 
-	/**
-	 * @param HmacSignature $signatureVerifier
-	 * @param ShopifyApiClient $shopifyClient
-	 */
-	public function __construct(HmacSignature $signatureVerifier, ShopifyApiClient $shopifyClient) {
+    /**
+     * @param HmacSignature $signatureVerifier
+     * @param ShopifyStoreRepositoryInterface $shops
+     */
+	public function __construct(
+	    HmacSignature $signatureVerifier,
+        ShopifyStoreRepositoryInterface $shops
+    ) {
 		$this->signatureVerifier = $signatureVerifier;
-		$this->shopifyClient     = $shopifyClient;
+        $this->shops = $shops;
 	}
 
-	/**
-	 * @param Request $request
-	 * @param string $providerKey
-	 * @return PreAuthenticatedToken
-	 */
-	public function createToken(Request $request, $providerKey) {
-		$credentials = array();
+    public function getCredentials(Request $request)
+    {
+        foreach (['shop', 'hmac', 'timestamp'] as $param) {
+            if (!$request->query->has($param)) {
+                return null;
+            }
+        }
 
-		foreach (array('shop', 'hmac', 'timestamp') as $requiredParam) {
-			if (! $value = $request->get($requiredParam, $request->get('amp;' . $requiredParam))) {
-				throw new BadCredentialsException($requiredParam . ' is missing.');
-			}
+        return $request->query->all();
+    }
 
-			$credentials[str_replace('amp;', '', $requiredParam)] = $value;
-		}
+    public function getUser($credentials, UserProviderInterface $userProvider)
+    {
+        return $this->shops->findOneByShopName($credentials['shop']);
+    }
 
-		return new PreAuthenticatedToken(
-			'anon.',
-			$credentials,
-			$providerKey
-		);
-	}
+    public function checkCredentials($credentials, UserInterface $user)
+    {
+        if (! $this->signatureVerifier->isValid($credentials['hmac'], $credentials)) {
+            throw new BadCredentialsException('Invalid signature');
+        }
 
-	/**
-	 * @param TokenInterface $token
-	 * @param UserProviderInterface $storeProvider
-	 * @param $providerKey
-	 * @return PreAuthenticatedToken
-	 */
-	public function authenticateToken(TokenInterface $token, UserProviderInterface $storeProvider, $providerKey) {
-		$credentials = $token->getCredentials();
+        return $user->getUsername() == $credentials['shop'];
+    }
 
-		//verify the shopify signature
-		if (! $this->signatureVerifier->isValid($credentials['hmac'], $credentials)) {
-			throw new BadCredentialsException('Invalid signature');
-		}
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
+    {
+        return null;
+    }
 
-		$store = $storeProvider->loadUserByUsername($credentials['shop']);
+    /**
+     * @param Request $request
+     * @param AuthenticationException $exception
+     * @return Response
+     */
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+    {
+        return new Response("API Authentication Failed.", 403);
+    }
 
-		//configure the API client to authenticate all outgoing requests with the shopify store's credentials
-		$this->shopifyClient->setShopifyStore($store);
+    public function supportsRememberMe()
+    {
+        // TODO: Implement supportsRememberMe() method.
+        return false;
+    }
 
-		return new PreAuthenticatedToken(
-			$store,
-			$credentials,
-			$providerKey,
-			$store->getRoles()
-		);
-	}
-
-	/**
-	 * @param TokenInterface $token
-	 * @param string $providerKey
-	 * @return bool
-	 */
-	public function supportsToken(TokenInterface $token, $providerKey) {
-		return $token instanceof PreAuthenticatedToken && $token->getProviderKey() === $providerKey;
-	}
-
-	/**
-	 * @param Request $request
-	 * @param AuthenticationException $exception
-	 * @return Response
-	 */
-	public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
-	{
-		return new Response("API Authentication Failed.", 403);
-	}
+    public function start(Request $request, AuthenticationException $authException = null)
+    {
+        return new Response('This area can only be accessed via Shopify');
+    }
 }

@@ -1,12 +1,11 @@
 services:
-  codecloud_shopify.oauth.listener:
-    class: CodeCloud\Bundle\ShopifyBundle\Events\OAuthRequestListener
-    arguments:
-      - "%codecloud_shopify%"
-      - "@router"
-      - "@codecloud_shopify.client"
-    tags:
-       - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+  codecloud_shopify.controller.oauth:
+      class: CodeCloud\Bundle\ShopifyBundle\Controller\OAuthController
+      arguments:
+          - "@router"
+          - "%codecloud_shopify.oauth%"
+          - "@codecloud_shopify.guzzle.client"
+          - "@repository.shop" #todo make this configurable
 
   codecloud_shopify.guzzle.client:
     class: GuzzleHttp\Client
@@ -25,13 +24,12 @@ services:
     class: CodeCloud\Bundle\ShopifyBundle\Auth\IncomingApiRequest\OAuthAuthenticator
     arguments:
       - "@codecloud_shopify.signer"
-      - "@codecloud_shopify.client"
+      - "@repository.shop" #todo make this configurable
 
   codecloud_shopify.provider.store:
     class: CodeCloud\Bundle\ShopifyBundle\Auth\Provider\ShopifyStoreProvider
     arguments:
-      - "@doctrine.orm.default_entity_manager"
-      - "%codecloud_shopify%"
+      - "@repository.shop" #todo make this configurable
 
   codecloud_shopify.twig.extension.currentShopifyStore:
     class: CodeCloud\Bundle\ShopifyBundle\Twig\Extension\ShopifyStore
