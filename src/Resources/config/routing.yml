@@ -1,10 +1,9 @@
-# todo swap these endpoints
 code_cloud_shopify_auth:
-    path: /shopify/verify
+    path: /shopify/auth
     defaults:
         _controller: codecloud_shopify.controller.oauth:auth
 
 code_cloud_shopify_verify:
-    path: /shopify/auth
+    path: /shopify/verify
     defaults:
         _controller: codecloud_shopify.controller.oauth:verify
