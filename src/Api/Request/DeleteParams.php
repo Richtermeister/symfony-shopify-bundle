@@ -1,7 +1,9 @@
 <?php
 namespace CodeCloud\Bundle\ShopifyBundle\Api\Request;
 
-class DeleteParams extends ModifyableRequest
+use GuzzleHttp\Psr7\Request;
+
+class DeleteParams extends Request
 {
 	/**
 	 * @param string $url
@@ -9,6 +11,10 @@ class DeleteParams extends ModifyableRequest
 	 */
 	public function __construct($url, array $params = array())
 	{
-		parent::__construct('DELETE', $params);
+        if (!empty($params)) {
+            $url .= '?'.http_build_query($params);
+        }
+
+		parent::__construct('DELETE', $url);
 	}
 }

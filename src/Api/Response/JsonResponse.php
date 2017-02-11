@@ -1,8 +1,7 @@
 <?php
 namespace CodeCloud\Bundle\ShopifyBundle\Api\Response;
 
-use GuzzleHttp\Exception\ParseException;
-use GuzzleHttp\Message\Response;
+use Psr\Http\Message\ResponseInterface as PsrResponse;
 
 class JsonResponse implements ResponseInterface
 {
@@ -12,22 +11,22 @@ class JsonResponse implements ResponseInterface
 	private $decoded;
 
 	/**
-	 * @var Response
+	 * @var PsrResponse
 	 */
 	private $response;
 
 	/**
-	 * @param Response $response
+	 * @param PsrResponse $response
 	 */
-	public function __construct(Response $response)
+	public function __construct(PsrResponse $response)
 	{
 		$this->response = $response;
 	}
 
 	/**
-	 * @return Response
+	 * @return PsrResponse
 	 */
-	public function getGuzzleResponse()
+	public function getHttpResponse()
 	{
 		return $this->response;
 	}
@@ -66,7 +65,7 @@ class JsonResponse implements ResponseInterface
 	 */
 	public function successful()
 	{
-		return preg_match('/^2[\d]{2,}/', $this->getGuzzleResponse()->getStatusCode());
+		return preg_match('/^2[\d]{2,}/', $this->getHttpResponse()->getStatusCode());
 	}
 
 	/**
@@ -74,13 +73,17 @@ class JsonResponse implements ResponseInterface
 	 */
 	private function getDecodedJson()
 	{
-		if (! $this->decoded) {
-			try {
-				$this->decoded = $this->response->json();
-			} catch (ParseException $e) {
-				return array();
-			}
-		}
-		return $this->decoded;
+		if (!is_null($this->decoded)) {
+		    return $this->decoded;
+        }
+
+        try {
+            return $this->decoded = \GuzzleHttp\json_decode(
+                (string) $this->getHttpResponse()->getBody(),
+                true
+            );
+        } catch (\InvalidArgumentException $e) {
+            return $this->decoded = array();
+        }
 	}
 }

@@ -1,27 +1,27 @@
 <?php
 namespace CodeCloud\Bundle\ShopifyBundle\Api\Response;
 
-use GuzzleHttp\Message\Response;
+use Psr\Http\Message\ResponseInterface as PsrResponse;
 
 class HtmlResponse implements ResponseInterface
 {
 	/**
-	 * @var Response
+	 * @var PsrResponse
 	 */
 	private $response;
 
 	/**
-	 * @param Response $response
+	 * @param PsrResponse $response
 	 */
-	public function __construct(Response $response)
+	public function __construct(PsrResponse $response)
 	{
 		$this->response = $response;
 	}
 
 	/**
-	 * @return Response
+	 * @return PsrResponse
 	 */
-	public function getGuzzleResponse()
+	public function getHttpResponse()
 	{
 		return $this->response;
 	}
@@ -41,6 +41,6 @@ class HtmlResponse implements ResponseInterface
 	 */
 	public function successful()
 	{
-		return preg_match('/^2[\d]{2,}/', $this->getGuzzleResponse()->getStatusCode());
+		return preg_match('/^2[\d]{2,}/', $this->getHttpResponse()->getStatusCode());
 	}
 }

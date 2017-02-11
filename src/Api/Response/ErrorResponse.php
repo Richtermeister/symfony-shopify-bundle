@@ -2,12 +2,12 @@
 namespace CodeCloud\Bundle\ShopifyBundle\Api\Response;
 
 use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Message\Response;
+use Psr\Http\Message\ResponseInterface as PsrResponse;
 
 class ErrorResponse implements ResponseInterface
 {
 	/**
-	 * @var Response
+	 * @var PsrResponse
 	 */
 	private $response;
 
@@ -17,10 +17,10 @@ class ErrorResponse implements ResponseInterface
 	private $exception;
 
 	/**
-	 * @param Response $response
+	 * @param PsrResponse $response
 	 * @param $exception
 	 */
-	public function __construct(Response $response, ClientException $exception)
+	public function __construct(PsrResponse $response, ClientException $exception)
 	{
 		$this->response  = $response;
 		$this->exception = $exception;
@@ -37,9 +37,9 @@ class ErrorResponse implements ResponseInterface
 	}
 
 	/**
-	 * @return Response
+	 * @return PsrResponse
 	 */
-	public function getGuzzleResponse()
+	public function getHttpResponse()
 	{
 		return $this->response;
 	}

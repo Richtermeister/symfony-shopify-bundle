@@ -1,7 +1,9 @@
 <?php
 namespace CodeCloud\Bundle\ShopifyBundle\Api\Request;
 
-class GetParams extends ModifyableRequest
+use GuzzleHttp\Psr7\Request;
+
+class GetParams extends Request
 {
 	/**
 	 * @param string $url
@@ -9,6 +11,10 @@ class GetParams extends ModifyableRequest
 	 */
 	public function __construct($url, array $params = array())
 	{
-		parent::__construct('GET', $url, $params);
+        if (!empty($params)) {
+            $url .= '?'.http_build_query($params);
+        }
+
+		parent::__construct('GET', $url);
 	}
 }

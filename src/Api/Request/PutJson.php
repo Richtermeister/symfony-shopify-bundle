@@ -1,9 +1,9 @@
 <?php
 namespace CodeCloud\Bundle\ShopifyBundle\Api\Request;
 
-use GuzzleHttp\Stream\Stream;
+use GuzzleHttp\Psr7\Request;
 
-class PutJson extends ModifyableRequest
+class PutJson extends Request
 {
 	/**
 	 * @param string $url
@@ -12,12 +12,19 @@ class PutJson extends ModifyableRequest
 	 */
 	public function __construct($url, $postData = null, array $headers = array())
 	{
-		if ($postData = $postData !== null ? json_encode($postData, JSON_PRETTY_PRINT) : null) {
-			$postData = Stream::factory($postData);
-		}
+        if ($postData !== null) {
+            $postData = json_encode($postData, JSON_PRETTY_PRINT);
+        }
+
+        if (!empty($params)) {
+            $url .= '?'.http_build_query($params);
+        }
+
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+        ];
 
 		parent::__construct('PUT', $url, $headers, $postData);
-
-		$this->setHeader('Content-type', 'application/json');
 	}
 }

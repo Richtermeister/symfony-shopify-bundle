@@ -1,17 +1,14 @@
 <?php
 namespace CodeCloud\Bundle\ShopifyBundle\Api;
 
-use CodeCloud\Bundle\ShopifyBundle\Api\Request\ModifyableRequest;
-use CodeCloud\Bundle\ShopifyBundle\Api\Request\RequestModifier;
 use CodeCloud\Bundle\ShopifyBundle\Api\Response\ErrorResponse;
 use CodeCloud\Bundle\ShopifyBundle\Api\Response\HtmlResponse;
 use CodeCloud\Bundle\ShopifyBundle\Api\Response\JsonResponse;
-use CodeCloud\Bundle\ShopifyBundle\Auth\OutgoingApiRequest\AccessTokenRequestModifier;
-use CodeCloud\Bundle\ShopifyBundle\Auth\OutgoingApiRequest\ShopNameRequestModifier;
 use CodeCloud\Bundle\ShopifyBundle\Entity\ShopifyStoreInterface;
-use GuzzleHttp\Client as HttpClient;
+use GuzzleHttp\ClientInterface as HttpClient;
 use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Message\Request;
+use GuzzleHttp\Psr7\Uri;
+use Psr\Http\Message\RequestInterface;
 
 class ShopifyApiClient
 {
@@ -27,11 +24,6 @@ class ShopifyApiClient
 	private $shopifyStore;
 
 	/**
-	 * @var array|RequestModifier[]
-	 */
-	private $modifiers = array();
-
-	/**
 	 * @param HttpClient $httpClient
 	 */
 	public function __construct(HttpClient $httpClient)
@@ -40,38 +32,16 @@ class ShopifyApiClient
 	}
 
 	/**
-	 * @param RequestModifier $modifier
+	 * @param RequestInterface $request
+	 * @return \CodeCloud\Bundle\ShopifyBundle\Api\Response\ResponseInterface
 	 */
-	public function addModifier(RequestModifier $modifier)
+	public function process(RequestInterface $request)
 	{
-		$this->modifiers[] = $modifier;
-	}
-
-	/**
-	 * Runs all registered modifiers
-	 * @param Request $request
-	 * @return Request
-	 */
-	public function runModifiers(Request $request)
-	{
-		foreach ($this->modifiers as $modifier) {
-			$modifier->modify($request);
-		}
-	}
-
-	/**
-	 * @param ModifyableRequest $request
-	 * @return \GuzzleHttp\Message\Response|\CodeCloud\Bundle\ShopifyBundle\Api\Response\ResponseInterface
-	 */
-	public function process(ModifyableRequest $request)
-	{
-		$this->runModifiers($request);
-
 		$guzzleResponse = $this->http->send($request);
 
 		try {
-			switch (true) {
-				case $request->getHeader('Content-type', 'application/json'):
+			switch ($request->getHeaderLine('Content-type')) {
+				case 'application/json':
 					$response = new JsonResponse($guzzleResponse);
 					break;
 				default:
@@ -86,12 +56,12 @@ class ShopifyApiClient
 
 	/**
 	 * Loop through a set of API results that are available in pages, returning the full resultset as one array
-	 * @param ModifyableRequest $request
+	 * @param RequestInterface $request
 	 * @param string $rootElement
 	 * @param array $params
 	 * @return array
 	 */
-	public function processPaged(ModifyableRequest $request, $rootElement, array $params = array())
+	public function processPaged(RequestInterface $request, $rootElement, array $params = array())
 	{
 		if (empty($params['page'])) {
 			$params['page'] = 1;
@@ -104,12 +74,10 @@ class ShopifyApiClient
 		$allResults = array();
 
 		do {
-			$pagedRequest = clone $request;
-
-			$requestUrl = $request->getUrl();
+			$requestUrl = $request->getUri();
 			$paramDelim = strstr($requestUrl, '?') ? '&' : '?';
 
-			$pagedRequest->setUrl($requestUrl . $paramDelim . http_build_query($params));
+            $pagedRequest = $request->withUri(new Uri($requestUrl . $paramDelim . http_build_query($params)));
 
 			$response = $this->process($pagedRequest);
 
@@ -132,16 +100,6 @@ class ShopifyApiClient
 	public function http()
 	{
 		return $this->http;
-	}
-
-	/**
-	 * @param ShopifyStoreInterface $shopifyStore
-	 */
-	public function setShopifyStore(ShopifyStoreInterface $shopifyStore)
-	{
-		$this->shopifyStore = $shopifyStore;
-		$this->addModifier(new ShopNameRequestModifier($shopifyStore->getShopName()));
-		$this->addModifier(new AccessTokenRequestModifier($shopifyStore->getAccessToken()));
 	}
 
 	/**

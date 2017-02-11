@@ -1,7 +1,9 @@
 <?php
 namespace CodeCloud\Bundle\ShopifyBundle\Api\Request;
 
-class GetJson extends ModifyableRequest
+use GuzzleHttp\Psr7\Request;
+
+class GetJson extends Request
 {
 	/**
 	 * @param string $url
@@ -9,8 +11,12 @@ class GetJson extends ModifyableRequest
 	 */
 	public function __construct($url, array $params = array())
 	{
-		parent::__construct('GET', $url, $params);
+	    if (!empty($params)) {
+	        $url .= '?'.http_build_query($params);
+        }
 
-		$this->setHeader('Content-type', 'application/json');
+		parent::__construct('GET', $url, [
+            'Content-type' => 'application/json',
+        ]);
 	}
 }

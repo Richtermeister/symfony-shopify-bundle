@@ -1,12 +1,12 @@
 <?php
 namespace CodeCloud\Bundle\ShopifyBundle\Api\Response;
 
-use GuzzleHttp\Message\Response;
+use Psr\Http\Message\ResponseInterface as PsrResponse;
 
 interface ResponseInterface
 {
 	/**
-	 * @return mixed
+	 * @return bool
 	 */
 	public function successful();
 
@@ -20,7 +20,7 @@ interface ResponseInterface
 	public function get($item = null, $default = null);
 
 	/**
-	 * @return Response
+	 * @return PsrResponse
 	 */
-	public function getGuzzleResponse();
+	public function getHttpResponse();
 }

@@ -50,7 +50,7 @@ class WebhookMapper extends EntityMapper
 	 */
 	public function create(GenericEntity $webhook)
 	{
-		$request = new PostJson('/admin/webooks.json', array('webhook' => $webhook->toArray()));
+		$request = new PostJson('/admin/webhooks.json', array('webhook' => $webhook->toArray()));
 		$response = $this->send($request);
 		return $this->createEntity($response->get('webhook'));
 	}
@@ -61,7 +61,7 @@ class WebhookMapper extends EntityMapper
 	 */
 	public function update($webhookId, GenericEntity $webhook)
 	{
-		$request = new PutJson('/admin/webooks/' . $webhookId . '.json', array('webhook' => $webhook->toArray()));
+		$request = new PutJson('/admin/webhooks/' . $webhookId . '.json', array('webhook' => $webhook->toArray()));
 		$response = $this->send($request);
 		return $this->createEntity($response->get('webhook'));
 	}
@@ -71,7 +71,7 @@ class WebhookMapper extends EntityMapper
 	 */
 	public function delete($webhookId)
 	{
-		$request = new DeleteParams('/admin/webooks/' . $webhookId . '.json');
+		$request = new DeleteParams('/admin/webhooks/' . $webhookId . '.json');
 		$this->send($request);
 	}
 }

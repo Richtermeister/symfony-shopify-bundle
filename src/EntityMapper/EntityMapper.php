@@ -2,9 +2,9 @@
 namespace CodeCloud\Bundle\ShopifyBundle\EntityMapper;
 
 use CodeCloud\Bundle\ShopifyBundle\Api\Request\Exception\FailedRequestException;
-use CodeCloud\Bundle\ShopifyBundle\Api\Request\ModifyableRequest;
 use CodeCloud\Bundle\ShopifyBundle\Api\ShopifyApiClient;
 use CodeCloud\Bundle\ShopifyBundle\Entity\GenericEntity;
+use Psr\Http\Message\RequestInterface;
 
 abstract class EntityMapper
 {
@@ -12,11 +12,6 @@ abstract class EntityMapper
 	 * @var ShopifyApiClient
 	 */
 	protected $api;
-
-	/**
-	 * @var string
-	 */
-	private $storeName;
 
 	/**
 	 * @param ShopifyApiClient $apiClient
@@ -27,46 +22,38 @@ abstract class EntityMapper
 	}
 
 	/**
-	 * @param string $storeName
-	 */
-	public function setStoreName($storeName)
-	{
-		$this->storeName = $storeName;
-	}
-
-	/**
-	 * @param ModifyableRequest $request
+	 * @param RequestInterface $request
 	 * @return \CodeCloud\Bundle\ShopifyBundle\Api\Response\ResponseInterface
 	 * @throws FailedRequestException
 	 */
-	protected function send(ModifyableRequest $request)
+	protected function send(RequestInterface $request)
 	{
 		$response = $this->api->process($request);
 
 		if (! $response->successful()) {
-			throw new FailedRequestException('Failed request. ' . $response->getGuzzleResponse());
+			throw new FailedRequestException('Failed request. ' . $response->getHttpResponse()->getReasonPhrase());
 		}
 
 		return $response;
 	}
 
 	/**
-	 * @param ModifyableRequest $request
+	 * @param RequestInterface $request
 	 * @param string $rootElement
 	 * @return array
 	 * @throws FailedRequestException
 	 */
-	protected function sendPaged(ModifyableRequest $request, $rootElement)
+	protected function sendPaged(RequestInterface $request, $rootElement)
 	{
 		return $this->api->processPaged($request, $rootElement);
 	}
 
 	/**
 	 * @param array $items
-	 * @param null $prototype
+	 * @param GenericEntity|null $prototype
 	 * @return array
 	 */
-	protected function createCollection($items, $prototype = null)
+	protected function createCollection($items, GenericEntity $prototype = null)
 	{
 		if (! $prototype) {
 			$prototype = new GenericEntity();
@@ -91,6 +78,7 @@ abstract class EntityMapper
 	{
 		$entity = new GenericEntity();
 		$entity->hydrate($data);
+
 		return $entity;
 	}
 }
