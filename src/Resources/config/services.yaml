@@ -26,18 +26,18 @@ services:
       - "@codecloud_shopify.http.authorized_client"
 
   codecloud_shopify.signer:
-    class: CodeCloud\Bundle\ShopifyBundle\Auth\HmacSignature
+    class: CodeCloud\Bundle\ShopifyBundle\Security\HmacSignature
     arguments:
       - "%codecloud_shopify%"
 
   codecloud_shopify.oauth.authenticator:
-    class: CodeCloud\Bundle\ShopifyBundle\Auth\IncomingApiRequest\OAuthAuthenticator
+    class: CodeCloud\Bundle\ShopifyBundle\Security\OAuthAuthenticator
     arguments:
       - "@codecloud_shopify.signer"
       - "@repository.shop" #todo make this configurable
 
   codecloud_shopify.provider.store:
-    class: CodeCloud\Bundle\ShopifyBundle\Auth\Provider\ShopifyStoreProvider
+    class: CodeCloud\Bundle\ShopifyBundle\Security\ShopifyStoreProvider
     arguments:
       - "@repository.shop" #todo make this configurable
 

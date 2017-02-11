@@ -2,7 +2,7 @@
 
 namespace CodeCloud\Bundle\ShopifyBundle\Controller;
 
-use CodeCloud\Bundle\ShopifyBundle\Entity\ShopifyStoreRepositoryInterface;
+use CodeCloud\Bundle\ShopifyBundle\Model\ShopifyStoreManagerInterface;
 use GuzzleHttp\ClientInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,7 +28,7 @@ class OAuthController
     private $client;
 
     /**
-     * @var ShopifyStoreRepositoryInterface
+     * @var ShopifyStoreManagerInterface
      */
     private $stores;
 
@@ -36,13 +36,13 @@ class OAuthController
      * @param UrlGeneratorInterface $router
      * @param array $config
      * @param ClientInterface $client
-     * @param ShopifyStoreRepositoryInterface $stores
+     * @param ShopifyStoreManagerInterface $stores
      */
     public function __construct(
         UrlGeneratorInterface $router,
         array $config,
         ClientInterface $client,
-        ShopifyStoreRepositoryInterface $stores
+        ShopifyStoreManagerInterface $stores
     ) {
         $this->router = $router;
         $this->client = $client;

@@ -4,7 +4,7 @@ namespace CodeCloud\Bundle\ShopifyBundle\Api;
 use CodeCloud\Bundle\ShopifyBundle\Api\Response\ErrorResponse;
 use CodeCloud\Bundle\ShopifyBundle\Api\Response\HtmlResponse;
 use CodeCloud\Bundle\ShopifyBundle\Api\Response\JsonResponse;
-use CodeCloud\Bundle\ShopifyBundle\Entity\ShopifyStoreInterface;
+use CodeCloud\Bundle\ShopifyBundle\Model\ShopifyStoreInterface;
 use GuzzleHttp\ClientInterface as HttpClient;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Uri;
@@ -19,7 +19,7 @@ class ShopifyApiClient
 	private $http;
 
 	/**
-	 * @var ShopifyStoreInterface
+	 * @var \CodeCloud\Bundle\ShopifyBundle\Model\ShopifyStoreInterface
 	 */
 	private $shopifyStore;
 
@@ -103,7 +103,7 @@ class ShopifyApiClient
 	}
 
 	/**
-	 * @return ShopifyStoreInterface
+	 * @return \CodeCloud\Bundle\ShopifyBundle\Model\ShopifyStoreInterface
 	 */
 	public function getStore()
 	{
