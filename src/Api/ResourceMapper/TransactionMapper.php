@@ -4,7 +4,7 @@ namespace CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper;
 use CodeCloud\Bundle\ShopifyBundle\Api\Request\GetJson;
 use CodeCloud\Bundle\ShopifyBundle\Api\Request\PostJson;
 
-class TransactionMapper extends ResourceMapper
+class TransactionMapper extends AbstractResourceMapper
 {
 	/**
 	 * @param int $orderId

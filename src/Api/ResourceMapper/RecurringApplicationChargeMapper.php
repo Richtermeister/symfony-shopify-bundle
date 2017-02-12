@@ -6,7 +6,7 @@ use CodeCloud\Bundle\ShopifyBundle\Api\Request\GetJson;
 use CodeCloud\Bundle\ShopifyBundle\Api\Request\PostJson;
 use CodeCloud\Bundle\ShopifyBundle\Api\GenericResource;
 
-class RecurringApplicationChargeMapper extends ResourceMapper
+class RecurringApplicationChargeMapper extends AbstractResourceMapper
 {
 	/**
 	 * @param \CodeCloud\Bundle\ShopifyBundle\Api\GenericResource $recurringApplicationCharge

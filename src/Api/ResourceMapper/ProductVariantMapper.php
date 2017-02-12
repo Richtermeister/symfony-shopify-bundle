@@ -7,7 +7,7 @@ use CodeCloud\Bundle\ShopifyBundle\Api\Request\PostJson;
 use CodeCloud\Bundle\ShopifyBundle\Api\Request\PutJson;
 use CodeCloud\Bundle\ShopifyBundle\Api\GenericResource;
 
-class ProductVariantMapper extends ResourceMapper
+class ProductVariantMapper extends AbstractResourceMapper
 {
 	/**
 	 * @param int $productId

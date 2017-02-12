@@ -5,35 +5,35 @@ namespace CodeCloud\Bundle\ShopifyBundle\Api;
 use CodeCloud\Bundle\ShopifyBundle\Model\ShopifyStoreInterface;
 use GuzzleHttp\Client;
 
+/**
+ * Creates authenticated clients for public and private apps.
+ */
 class HttpClientFactory implements HttpClientFactoryInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function createPublicAppHttpClient(ShopifyStoreInterface $shopifyStore)
+    public function createHttpClient(ShopifyStoreInterface $shopifyStore)
     {
-        $shopName = 'alastin.myshopify.com';
-        $accessToken = 'f18432a4441a9e45b2287d5661e32c9f';
-
-        return new Client([
+        $options = [
             'base_uri' => 'https://' . $shopifyStore->getShopName(),
-            'headers' => [
-                'X-Shopify-Access-Token' => $shopifyStore->getAccessToken(),
-            ],
-        ]);
-    }
+        ];
 
-    /**
-     * {@inheritdoc}
-     */
-    public function createPrivateAppHttpClient($storeName, $apiKey, $password)
-    {
-        return new Client([
-            'base_uri' => 'https://' . $storeName,
-            'auth' => [
-                $apiKey,
-                $password,
-            ],
-        ]);
+        $credentials = $shopifyStore->getCredentials();
+
+        switch (true) {
+            case  $credentials instanceof PublicAppCredentials:
+                $options['headers'] = [
+                    'X-Shopify-Access-Token' => $credentials->getAccessToken(),
+                ];
+                break;
+            case $credentials instanceof PrivateAppCredentials:
+                $options['auth'] = [
+                    $credentials->getApiKey(),
+                    $credentials->getPassword(),
+                ];
+                break;
+            default:
+                throw new \RuntimeException('Invalid credentials given');
+        }
+
+        return new Client($options);
     }
 }

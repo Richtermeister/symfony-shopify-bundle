@@ -3,7 +3,7 @@ namespace CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper;
 
 use CodeCloud\Bundle\ShopifyBundle\Api\Request\GetJson;
 
-class UserMapper extends ResourceMapper
+class UserMapper extends AbstractResourceMapper
 {
 	/**
 	 * @return array|GenericEntity[]

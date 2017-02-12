@@ -4,7 +4,7 @@ namespace CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper;
 use CodeCloud\Bundle\ShopifyBundle\Api\Request\GetJson;
 use CodeCloud\Bundle\ShopifyBundle\Api\GenericResource;
 
-class ShopMapper extends ResourceMapper
+class ShopMapper extends AbstractResourceMapper
 {
 	/**
 	 * @return GenericResource

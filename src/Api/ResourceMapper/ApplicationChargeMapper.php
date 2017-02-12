@@ -5,7 +5,7 @@ use CodeCloud\Bundle\ShopifyBundle\Api\Request\GetParams;
 use CodeCloud\Bundle\ShopifyBundle\Api\Request\PostJson;
 use CodeCloud\Bundle\ShopifyBundle\Api\GenericResource;
 
-class ApplicationChargeMapper extends ResourceMapper
+class ApplicationChargeMapper extends AbstractResourceMapper
 {
 	/**
 	 * @param array $query

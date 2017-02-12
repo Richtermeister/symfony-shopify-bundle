@@ -5,7 +5,7 @@ use CodeCloud\Bundle\ShopifyBundle\Api\Request\DeleteParams;
 use CodeCloud\Bundle\ShopifyBundle\Api\Request\GetJson;
 use CodeCloud\Bundle\ShopifyBundle\Api\Request\PutJson;
 
-class AssetMapper extends ResourceMapper
+class AssetMapper extends AbstractResourceMapper
 {
 	public function findByTheme($themeId, array $fields = array())
 	{

@@ -7,7 +7,7 @@ use CodeCloud\Bundle\ShopifyBundle\Api\Request\PostJson;
 use CodeCloud\Bundle\ShopifyBundle\Api\Request\PutJson;
 use CodeCloud\Bundle\ShopifyBundle\Api\GenericResource;
 
-class MetafieldMapper extends ResourceMapper
+class MetafieldMapper extends AbstractResourceMapper
 {
 	/**
 	 * @param array $query

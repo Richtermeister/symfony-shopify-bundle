@@ -6,7 +6,7 @@ use CodeCloud\Bundle\ShopifyBundle\Api\Request\GetJson;
 use CodeCloud\Bundle\ShopifyBundle\Api\Request\PostJson;
 use CodeCloud\Bundle\ShopifyBundle\Api\GenericResource;
 
-class CarrierServiceMapper extends ResourceMapper
+class CarrierServiceMapper extends AbstractResourceMapper
 {
 	/**
 	 * @return array|GenericResource[]

@@ -1,6 +1,8 @@
 <?php
 namespace CodeCloud\Bundle\ShopifyBundle\Model;
 
+use CodeCloud\Bundle\ShopifyBundle\Api\PrivateAppCredentials;
+use CodeCloud\Bundle\ShopifyBundle\Api\PublicAppCredentials;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 interface ShopifyStoreInterface extends UserInterface
@@ -11,7 +13,7 @@ interface ShopifyStoreInterface extends UserInterface
 	public function getShopName();
 
 	/**
-	 * @return string
+	 * @return PrivateAppCredentials|PublicAppCredentials
 	 */
-	public function getAccessToken();
+	public function getCredentials();
 }

@@ -1,49 +1,89 @@
-imports:
-    - { resource: mappers.yml }
+parameters:
+    codecloud_shopify.endpoint_classes:
+        Article: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\ArticleMapper
+        Asset: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\AssetMapper
+        Blog: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\BlogMapper
+        CarrierService: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\CarrierServiceMapper
+        Checkout: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\CheckoutMapper
+        Collect: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\CollectMapper
+        Comment: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\CommentMapper
+        Country: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\CountryMapper
+        CustomCollection: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\CustomCollectionMapper
+        CustomerAddress: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\CustomerAddressMapper
+        Customer: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\CustomerMapper
+        SavedSearch: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\CustomerSavedSearchMapper
+        Event: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\EventMapper
+        Fulfillment: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\FulFillmentMapper
+        FulfillmentService: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\FulfillmentServiceMapper
+        Location: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\LocationMapper
+        Metafield: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\MetafieldMapper
+        Order: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\OrderMapper
+        OrderRisks: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\OrderRisksMapper
+        Page: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\PageMapper
+        Policy: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\PolicyMapper
+        ProductImage: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\ProductImageMapper
+        Product: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\ProductMapper
+        ProductVariant: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\ProductVariantMapper
+        Province: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\ProvinceMapper
+        RecurringApplicationCharge: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\RecurringApplicationChargeMapper
+        Redirect: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\RedirectMapper
+        Refund: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\RefundMapper
+        Shop: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\ShopMapper
+        SmartCollection: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\SmartCollectionMapper
+        Theme: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\ThemeMapper
+        Transaction: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\TransactionMapper
+        User: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\UserMapper
+        Webhook: CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper\WebhookMapper
 
 services:
+  codecloud_shopify.store_manager:
+      alias: repository.shop #todo make this configurable
+
   codecloud_shopify.controller.oauth:
+      public: false
       class: CodeCloud\Bundle\ShopifyBundle\Controller\OAuthController
       arguments:
           - "@router"
           - "%codecloud_shopify.oauth%"
           - "@codecloud_shopify.http.client"
-          - "@repository.shop" #todo make this configurable
-
-  codecloud_shopify.http.client_factory:
-    class: CodeCloud\Bundle\ShopifyBundle\Api\HttpClientFactory
+          - "@codecloud_shopify.store_manager"
 
   codecloud_shopify.http.client:
       class: GuzzleHttp\Client
 
-  codecloud_shopify.http.authorized_client:
-    class: GuzzleHttp\Client
-    factory: 'codecloud_shopify.http.client_factory:createHttpClient'
+  codecloud_shopify.http.client_factory:
+      public: false
+      class: CodeCloud\Bundle\ShopifyBundle\Api\HttpClientFactory
 
-  codecloud_shopify.client:
-    class: CodeCloud\Bundle\ShopifyBundle\Api\ShopifyApiClient
-    arguments:
-      - "@codecloud_shopify.http.authorized_client"
+  codecloud_shopify.shopify_api_factory:
+      class: CodeCloud\Bundle\ShopifyBundle\Api\ShopifyApiFactory
+      arguments:
+          - "@repository.shop"
+          - "@codecloud_shopify.http.client_factory"
+          - "%codecloud_shopify.endpoint_classes%"
 
   codecloud_shopify.signer:
-    class: CodeCloud\Bundle\ShopifyBundle\Security\HmacSignature
-    arguments:
-      - "%codecloud_shopify%"
+      public: false
+      class: CodeCloud\Bundle\ShopifyBundle\Security\HmacSignature
+      arguments:
+          - "%codecloud_shopify%"
 
   codecloud_shopify.oauth.authenticator:
-    class: CodeCloud\Bundle\ShopifyBundle\Security\OAuthAuthenticator
-    arguments:
-      - "@codecloud_shopify.signer"
-      - "@repository.shop" #todo make this configurable
+      public: false
+      class: CodeCloud\Bundle\ShopifyBundle\Security\OAuthAuthenticator
+      arguments:
+          - "@codecloud_shopify.signer"
+          - "@codecloud_shopify.store_manager"
 
   codecloud_shopify.provider.store:
-    class: CodeCloud\Bundle\ShopifyBundle\Security\ShopifyStoreProvider
-    arguments:
-      - "@repository.shop" #todo make this configurable
+      public: false
+      class: CodeCloud\Bundle\ShopifyBundle\Security\ShopifyStoreProvider
+      arguments:
+          - "@codecloud_shopify.store_manager"
 
-  codecloud_shopify.twig.extension.current_shopify_store:
-    class: CodeCloud\Bundle\ShopifyBundle\Twig\Extension\ShopifyStore
-    tags:
-      - { name: twig.extension }
-    calls:
-      - [setContainer, ["@service_container"]]
+#  codecloud_shopify.twig.extension.current_shopify_store:
+#    class: CodeCloud\Bundle\ShopifyBundle\Twig\Extension\ShopifyStore
+#    tags:
+#      - { name: twig.extension }
+#    calls:
+#      - [setContainer, ["@service_container"]]

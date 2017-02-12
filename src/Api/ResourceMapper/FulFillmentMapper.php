@@ -6,7 +6,7 @@ use CodeCloud\Bundle\ShopifyBundle\Api\Request\PostJson;
 use CodeCloud\Bundle\ShopifyBundle\Api\Request\PutJson;
 use CodeCloud\Bundle\ShopifyBundle\Api\GenericResource;
 
-class FulFillmentMapper extends ResourceMapper
+class FulFillmentMapper extends AbstractResourceMapper
 {
 	/**
 	 * @param int $orderId

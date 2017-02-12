@@ -3,7 +3,7 @@ namespace CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper;
 
 use CodeCloud\Bundle\ShopifyBundle\Api\Request\GetJson;
 
-class CheckoutMapper extends ResourceMapper
+class CheckoutMapper extends AbstractResourceMapper
 {
 	/**
 	 * @param array $query

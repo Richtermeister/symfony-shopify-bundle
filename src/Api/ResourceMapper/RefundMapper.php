@@ -3,7 +3,7 @@ namespace CodeCloud\Bundle\ShopifyBundle\Api\ResourceMapper;
 
 use CodeCloud\Bundle\ShopifyBundle\Api\Request\GetJson;
 
-class RefundMapper extends ResourceMapper
+class RefundMapper extends AbstractResourceMapper
 {
 	/**
 	 * @param int $orderId

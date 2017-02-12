@@ -7,7 +7,7 @@ use CodeCloud\Bundle\ShopifyBundle\Api\Request\PostJson;
 use CodeCloud\Bundle\ShopifyBundle\Api\Request\PutJson;
 use CodeCloud\Bundle\ShopifyBundle\Api\GenericResource;
 
-class CountryMapper extends ResourceMapper
+class CountryMapper extends AbstractResourceMapper
 {
 	/**
 	 * @return array|GenericResource[]
