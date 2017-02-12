@@ -20,23 +20,15 @@ class ShopifyApiFactory
     private $httpClientFactory;
 
     /**
-     * @var string
-     */
-    private $endpointClasses = [];
-
-    /**
      * @param ShopifyStoreManagerInterface $storeManager
      * @param HttpClientFactoryInterface $httpClientFactory
-     * @param array $endpointClasses
      */
     public function __construct(
         ShopifyStoreManagerInterface $storeManager,
-        HttpClientFactoryInterface $httpClientFactory,
-        array $endpointClasses
+        HttpClientFactoryInterface $httpClientFactory
     ) {
         $this->storeManager = $storeManager;
         $this->httpClientFactory = $httpClientFactory;
-        $this->endpointClasses = $endpointClasses;
     }
 
     /**
@@ -51,6 +43,6 @@ class ShopifyApiFactory
 
         $client = $this->httpClientFactory->createHttpClient($store);
 
-        return new ShopifyApi($client, $this->endpointClasses);
+        return new ShopifyApi($client);
     }
 }
