@@ -65,7 +65,7 @@ class OAuthController
             throw new BadRequestHttpException('Request is missing required parameter "shop".');
         }
 
-        $verifyUrl = $this->router->generate('code_cloud_shopify_verify', [], UrlGeneratorInterface::ABSOLUTE_URL);
+        $verifyUrl = $this->router->generate('codecloud_shopify_verify', [], UrlGeneratorInterface::ABSOLUTE_URL);
         $verifyUrl = str_replace("http", "https", $verifyUrl);
 
         $params = [
