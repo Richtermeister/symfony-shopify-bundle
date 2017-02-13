@@ -1,6 +1,7 @@
 services:
   codecloud_shopify.store_manager:
-      alias: repository.shop #todo make this configurable
+      synthetic: true
+      alias: ~ # this is configured via bundle extension
 
   codecloud_shopify.controller.oauth:
       public: false

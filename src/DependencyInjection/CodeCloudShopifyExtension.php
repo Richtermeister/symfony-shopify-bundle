@@ -21,5 +21,7 @@ class CodeCloudShopifyExtension extends Extension
 
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
 		$loader->load('services.yaml');
+
+        $container->setAlias('codecloud_shopify.store_manager', $config['store_manager_id']);
 	}
 }

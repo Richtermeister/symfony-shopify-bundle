@@ -18,6 +18,7 @@ class Configuration implements ConfigurationInterface
 		$rootNode = $treeBuilder->root('code_cloud_shopify');
 
 		$rootNode->children()
+                ->scalarNode('store_manager_id')->isRequired()->cannotBeEmpty()->end()
                 ->arrayNode('oauth')->isRequired()
                     ->children()
                         ->scalarNode('api_key')->isRequired()->cannotBeEmpty()->end()
