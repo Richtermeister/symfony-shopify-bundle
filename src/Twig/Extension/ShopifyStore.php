@@ -1,6 +1,7 @@
 <?php
 namespace CodeCloud\Bundle\ShopifyBundle\Twig\Extension;
 
+use AppBundle\Entity\Shop;
 use CodeCloud\Bundle\ShopifyBundle\Model\ShopifyStoreInterface;
 use CodeCloud\Bundle\ShopifyBundle\Security\HmacSignature;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -49,6 +50,8 @@ class ShopifyStore extends \Twig_Extension
 
     public function shopifyStore()
     {
+        return new Shop(123, 123);
+
         if (!$token = $this->tokenStorage->getToken()) {
             return null;
         }

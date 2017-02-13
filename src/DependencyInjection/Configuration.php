@@ -27,6 +27,9 @@ class Configuration implements ConfigurationInterface
                     ->scalarNode('redirect_route')->isRequired()->cannotBeEmpty()->end()
                 ->end()
             ->end()
+            ->arrayNode('webhooks')
+                ->prototype('scalar')->end()
+                ->defaultValue([])
         ->end();
 
 		return $treeBuilder;

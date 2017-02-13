@@ -11,6 +11,28 @@ services:
           - "@codecloud_shopify.http.client"
           - "@codecloud_shopify.store_manager"
 
+  codecloud_shopify.controller.webhooks:
+      class: CodeCloud\Bundle\ShopifyBundle\Controller\WebhookController
+      arguments:
+          - "@codecloud_shopify.store_manager"
+          - "@event_dispatcher"
+
+  codecloud_shopify.command.webhooks:
+      class: CodeCloud\Bundle\ShopifyBundle\Command\WebhooksCommand
+      arguments:
+          - "@codecloud_shopify.webhook_creator"
+          - "@codecloud_shopify.store_manager"
+          - "%codecloud_shopify.webhooks%"
+      tags:
+          - { name: console.command }
+
+  codecloud_shopify.listener.webhooks_logger:
+      class: CodeCloud\Bundle\ShopifyBundle\EventListener\WebhookLoggerListener
+      arguments:
+          - "@logger"
+      tags:
+          - { name: kernel.event_subscriber }
+
   codecloud_shopify.http.client:
       class: GuzzleHttp\Client
 
@@ -50,3 +72,9 @@ services:
           - "@security.token_storage"
       tags:
           - { name: twig.extension }
+
+  codecloud_shopify.webhook_creator:
+      class: CodeCloud\Bundle\ShopifyBundle\Service\WebhookCreator
+      arguments:
+          - "@codecloud_shopify.shopify_api_factory"
+          - "@router"
