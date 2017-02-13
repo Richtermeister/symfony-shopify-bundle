@@ -20,7 +20,7 @@ class CodeCloudShopifyExtension extends Extension
         $container->setParameter('codecloud_shopify.oauth', $config['oauth']);
 
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-		$loader->load('services.yaml');
+		$loader->load('services.yml');
 
         $container->setAlias('codecloud_shopify.store_manager', $config['store_manager_id']);
 	}

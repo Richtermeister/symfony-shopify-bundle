@@ -4,7 +4,6 @@ services:
       alias: ~ # this is configured via bundle extension
 
   codecloud_shopify.controller.oauth:
-      public: false
       class: CodeCloud\Bundle\ShopifyBundle\Controller\OAuthController
       arguments:
           - "@router"
