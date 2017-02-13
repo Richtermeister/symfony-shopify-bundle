@@ -48,7 +48,7 @@ class OAuthController
         $this->client = $client;
         $this->stores = $stores;
         $this->config = (new OptionsResolver())
-            ->setRequired(['api_key', 'shared_secret', 'scope'])
+            ->setRequired(['api_key', 'shared_secret', 'scope', 'redirect_route'])
             ->resolve($config)
         ;
     }
@@ -113,7 +113,7 @@ class OAuthController
         $this->stores->authenticateStore($storeName, $accessToken);
 
         return new RedirectResponse(
-            $this->router->generate('admin_dash', $request->query->all())
+            $this->router->generate($this->config['redirect_route'], $request->query->all())
         );
     }
 }

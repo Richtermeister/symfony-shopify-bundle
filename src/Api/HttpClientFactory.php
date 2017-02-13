@@ -13,7 +13,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
     public function createHttpClient(ShopifyStoreInterface $shopifyStore)
     {
         $options = [
-            'base_uri' => 'https://' . $shopifyStore->getShopName(),
+            'base_uri' => 'https://' . $shopifyStore->getStoreName(),
         ];
 
         $credentials = $shopifyStore->getCredentials();

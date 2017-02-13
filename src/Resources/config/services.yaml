@@ -44,9 +44,10 @@ services:
       arguments:
           - "@codecloud_shopify.store_manager"
 
-#  codecloud_shopify.twig.extension.current_shopify_store:
-#    class: CodeCloud\Bundle\ShopifyBundle\Twig\Extension\ShopifyStore
-#    tags:
-#      - { name: twig.extension }
-#    calls:
-#      - [setContainer, ["@service_container"]]
+  codecloud_shopify.twig_extension:
+      class: CodeCloud\Bundle\ShopifyBundle\Twig\Extension\ShopifyStore
+      arguments:
+          - "@codecloud_shopify.signer"
+          - "@security.token_storage"
+      tags:
+          - { name: twig.extension }

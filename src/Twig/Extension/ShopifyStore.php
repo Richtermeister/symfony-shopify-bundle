@@ -1,75 +1,64 @@
 <?php
 namespace CodeCloud\Bundle\ShopifyBundle\Twig\Extension;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use CodeCloud\Bundle\ShopifyBundle\Model\ShopifyStoreInterface;
+use CodeCloud\Bundle\ShopifyBundle\Security\HmacSignature;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
-class ShopifyStore extends \Twig_Extension {
+class ShopifyStore extends \Twig_Extension
+{
+    /**
+     * @var HmacSignature
+     */
+    private $hmac;
 
-	/**
-	 * @var ContainerInterface
-	 */
-	private $container;
+    /**
+     * @var TokenStorageInterface
+     */
+    private $tokenStorage;
 
-	/**
-	 * @return string
-	 */
-	public function getName() {
-		return 'shopifyStore';
-	}
+    /**
+     * @param HmacSignature $hmac
+     * @param TokenStorageInterface $tokenStorage
+     */
+    public function __construct(HmacSignature $hmac, TokenStorageInterface $tokenStorage)
+    {
+        $this->hmac = $hmac;
+        $this->tokenStorage = $tokenStorage;
+    }
 
-	/**
+    /**
 	 * @return array
 	 */
-	public function getGlobals() {
-		$apiClient =  $this->container->get('codecloud_shopify.client');
-		$store = $apiClient->getStore();
-
-		if (! $store) {
-			return array();
-		}
-
-		return array(
-			'currentStoreName' => $store->getShopName(),
-			'shopifyApiKey' => $this->container->getParameter('shopify_api_key')
-		);
+	public function getFunctions()
+    {
+		return [
+			new \Twig_SimpleFunction('embedded_link', [$this, 'embeddedLink']),
+            new \Twig_SimpleFunction('shopify_store', [$this, 'shopifyStore']),
+		];
 	}
 
-	/**
-	 * @return array
-	 */
-	public function getFunctions() {
-		$apiClient =  $this->container->get('codecloud_shopify.client');
-		$store = $apiClient->getStore();
+	public function embeddedLink($storeName, $uri, $uriParams = [])
+    {
+        $authParams = $this->hmac->generateParams($storeName);
 
-		if (! $store) {
-			return array();
-		}
+        return '/embedded/' . $uri . '?' . http_build_query(
+            array_merge($authParams, $uriParams)
+        );
+    }
 
-		$authParams = $this->container->get('codecloud_shopify.signer')->generateParams($store->getShopName());
+    public function shopifyStore()
+    {
+        if (!$token = $this->tokenStorage->getToken()) {
+            return null;
+        }
 
-		return array(
-			new \Twig_SimpleFunction('embedded_link', function($uri, $uriParams = null) use ($authParams) {
-				$params = array();
+        $user = $token->getUser();
 
-				foreach ($authParams as $key => $value) {
-					$params[] = $key . '=' . $value;
-				}
+        if (!$user instanceof ShopifyStoreInterface) {
+            return null;
+        }
 
-				$params = implode('&', $params);
-
-				if ($uriParams) {
-					$params .= '&' . $uriParams;
-				}
-
-				return '/embedded/' . $uri . '?' . $params;
-			})
-		);
-	}
-
-	/**
-	 * @param ContainerInterface $container
-	 */
-	public function setContainer(ContainerInterface $container) {
-		$this->container = $container;
-	}
+        return $user;
+    }
 }
