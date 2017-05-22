@@ -5,6 +5,7 @@ use CodeCloud\Bundle\ShopifyBundle\Api\Request\DeleteParams;
 use CodeCloud\Bundle\ShopifyBundle\Api\Request\GetJson;
 use CodeCloud\Bundle\ShopifyBundle\Api\Request\PostJson;
 use CodeCloud\Bundle\ShopifyBundle\Api\GenericResource;
+use CodeCloud\Bundle\ShopifyBundle\Api\Request\PutJson;
 
 class CustomerEndpoint extends AbstractEndpoint
 {
@@ -82,7 +83,7 @@ class CustomerEndpoint extends AbstractEndpoint
 	 */
 	public function update($customerId, GenericResource $customer)
 	{
-		$request = new PostJson('/admin/customers/' . $customerId . '.json', array('customer' => $customer->toArray()));
+		$request = new PutJson('/admin/customers/' . $customerId . '.json', array('customer' => $customer->toArray()));
 		$response = $this->send($request);
 		return $this->createEntity($response->get('customer'));
 	}

@@ -4,6 +4,11 @@ namespace CodeCloud\Bundle\ShopifyBundle\Api;
 
 use CodeCloud\Bundle\ShopifyBundle\Model\ShopifyStoreInterface;
 use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Creates authenticated clients for public and private apps.
@@ -12,8 +17,33 @@ class HttpClientFactory implements HttpClientFactoryInterface
 {
     public function createHttpClient(ShopifyStoreInterface $shopifyStore)
     {
+        $handlers = HandlerStack::create();
+        $handlers->push(Middleware::retry(
+            function($retries, RequestInterface $request, ResponseInterface $response = null, \Exception $error = null) {
+
+                // todo rate limit by this
+                //$response->getHeaderLine('X-Shopify-Shop-Api-Call-Limit');
+                if ($response && $response->getStatusCode() == Response::HTTP_TOO_MANY_REQUESTS) {
+                    return true;
+                }
+
+                return false;
+            },
+            function ($retries, ResponseInterface $response) {
+                if (!$response->hasHeader('Retry-After')) {
+                    return 1000;
+                }
+
+                dump((float) $response->getHeaderLine('Retry-After') * 1000);
+                die();
+
+                return (float) $response->getHeaderLine('Retry-After') * 1000;
+            }
+        ));
+
         $options = [
             'base_uri' => 'https://' . $shopifyStore->getStoreName(),
+            //'handler' => $handlers,
         ];
 
         $credentials = $shopifyStore->getCredentials();
