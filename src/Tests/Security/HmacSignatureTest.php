@@ -8,6 +8,6 @@ class HmacSignatureTest extends TestCase
 {
     public function test()
     {
-        $this->assertTrue(true);
+        $this->assertTrue(false);
     }
 }
