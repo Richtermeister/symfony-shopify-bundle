@@ -1,0 +1,7 @@
+version: '2'
+services:
+    php:
+        build: .
+        working_dir: /var/code
+        volumes:
+            - .:/var/code

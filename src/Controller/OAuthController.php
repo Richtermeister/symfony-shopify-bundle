@@ -66,6 +66,7 @@ class OAuthController
         }
 
         $verifyUrl = $this->router->generate('codecloud_shopify_verify', [], UrlGeneratorInterface::ABSOLUTE_URL);
+        // todo fix this like PR did
         $verifyUrl = str_replace("http", "https", $verifyUrl);
 
         $params = [
