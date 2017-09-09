@@ -8,11 +8,11 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class CodeCloudShopifyExtension extends Extension
 {
-	/**
-	 * {@inheritdoc}
-	 */
-	public function load(array $configs, ContainerBuilder $container)
-	{
+    /**
+     * {@inheritdoc}
+     */
+    public function load(array $configs, ContainerBuilder $container)
+    {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
@@ -21,8 +21,8 @@ class CodeCloudShopifyExtension extends Extension
         $container->setParameter('codecloud_shopify.webhooks', $config['webhooks']);
 
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-		$loader->load('services.yml');
+        $loader->load('services.yml');
 
         $container->setAlias('codecloud_shopify.store_manager', $config['store_manager_id']);
-	}
+    }
 }

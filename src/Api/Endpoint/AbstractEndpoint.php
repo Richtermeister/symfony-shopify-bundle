@@ -13,10 +13,10 @@ use GuzzleHttp\Psr7\Uri;
 
 abstract class AbstractEndpoint
 {
-	/**
-	 * @var ClientInterface
-	 */
-	private $client;
+    /**
+     * @var ClientInterface
+     */
+    private $client;
 
     /**
      * @param ClientInterface $client
@@ -27,65 +27,65 @@ abstract class AbstractEndpoint
     }
 
     /**
-	 * @param RequestInterface $request
-	 * @return \CodeCloud\Bundle\ShopifyBundle\Api\Response\ResponseInterface
-	 * @throws FailedRequestException
-	 */
-	protected function send(RequestInterface $request)
-	{
-		$response = $this->process($request);
+     * @param RequestInterface $request
+     * @return \CodeCloud\Bundle\ShopifyBundle\Api\Response\ResponseInterface
+     * @throws FailedRequestException
+     */
+    protected function send(RequestInterface $request)
+    {
+        $response = $this->process($request);
 
-		if (! $response->successful()) {
-			throw new FailedRequestException('Failed request. ' . $response->getHttpResponse()->getReasonPhrase());
-		}
+        if (! $response->successful()) {
+            throw new FailedRequestException('Failed request. ' . $response->getHttpResponse()->getReasonPhrase());
+        }
 
-		return $response;
-	}
+        return $response;
+    }
 
-	/**
-	 * @param RequestInterface $request
-	 * @param string $rootElement
-	 * @return array
-	 * @throws FailedRequestException
-	 */
-	protected function sendPaged(RequestInterface $request, $rootElement)
-	{
-		return $this->processPaged($request, $rootElement);
-	}
+    /**
+     * @param RequestInterface $request
+     * @param string $rootElement
+     * @return array
+     * @throws FailedRequestException
+     */
+    protected function sendPaged(RequestInterface $request, $rootElement)
+    {
+        return $this->processPaged($request, $rootElement);
+    }
 
-	/**
-	 * @param array $items
-	 * @param GenericResource|null $prototype
-	 * @return array
-	 */
-	protected function createCollection($items, GenericResource $prototype = null)
-	{
-		if (! $prototype) {
-			$prototype = new GenericResource();
-		}
+    /**
+     * @param array $items
+     * @param GenericResource|null $prototype
+     * @return array
+     */
+    protected function createCollection($items, GenericResource $prototype = null)
+    {
+        if (! $prototype) {
+            $prototype = new GenericResource();
+        }
 
-		$collection = array();
+        $collection = array();
 
-		foreach ((array)$items as $item) {
-			$newItem = clone $prototype;
-			$newItem->hydrate($item);
-			$collection[] = $newItem;
-		}
+        foreach ((array)$items as $item) {
+            $newItem = clone $prototype;
+            $newItem->hydrate($item);
+            $collection[] = $newItem;
+        }
 
-		return $collection;
-	}
+        return $collection;
+    }
 
-	/**
-	 * @param array $data
-	 * @return GenericResource
-	 */
-	protected function createEntity($data)
-	{
-		$entity = new GenericResource();
-		$entity->hydrate($data);
+    /**
+     * @param array $data
+     * @return GenericResource
+     */
+    protected function createEntity($data)
+    {
+        $entity = new GenericResource();
+        $entity->hydrate($data);
 
-		return $entity;
-	}
+        return $entity;
+    }
 
     /**
      * @param RequestInterface $request
@@ -144,7 +144,6 @@ abstract class AbstractEndpoint
             }
 
             $params['page']++;
-
         } while ($pageResults);
 
         return $allResults;

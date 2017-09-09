@@ -11,7 +11,7 @@ class ShopifyStoreProvider implements UserProviderInterface
     /**
      * @var ShopifyStoreManagerInterface
      */
-	private $shops;
+    private $shops;
 
     /**
      * @param ShopifyStoreManagerInterface $shops
@@ -22,29 +22,29 @@ class ShopifyStoreProvider implements UserProviderInterface
     }
 
     /**
-	 * @param string $username
-	 * @return \CodeCloud\Bundle\ShopifyBundle\Model\ShopifyStoreInterface
-	 */
-	public function loadUserByUsername($username)
-	{
-		return $this->shops->findStoreByName($username);
-	}
+     * @param string $username
+     * @return \CodeCloud\Bundle\ShopifyBundle\Model\ShopifyStoreInterface
+     */
+    public function loadUserByUsername($username)
+    {
+        return $this->shops->findStoreByName($username);
+    }
 
     /**
      * @param UserInterface $user
      * @return UserInterface
      */
-	public function refreshUser(UserInterface $user)
-	{
-		return $this->loadUserByUsername($user->getUsername());
-	}
+    public function refreshUser(UserInterface $user)
+    {
+        return $this->loadUserByUsername($user->getUsername());
+    }
 
-	/**
-	 * @param string $class
-	 * @return bool
-	 */
-	public function supportsClass($class)
-	{
-		return $class instanceof ShopifyStoreInterface;
-	}
+    /**
+     * @param string $class
+     * @return bool
+     */
+    public function supportsClass($class)
+    {
+        return $class instanceof ShopifyStoreInterface;
+    }
 }

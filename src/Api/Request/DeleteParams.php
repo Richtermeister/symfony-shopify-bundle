@@ -5,16 +5,16 @@ use GuzzleHttp\Psr7\Request;
 
 class DeleteParams extends Request
 {
-	/**
-	 * @param string $url
-	 * @param array $params
-	 */
-	public function __construct($url, array $params = array())
-	{
+    /**
+     * @param string $url
+     * @param array $params
+     */
+    public function __construct($url, array $params = array())
+    {
         if (!empty($params)) {
             $url .= '?'.http_build_query($params);
         }
 
-		parent::__construct('DELETE', $url);
-	}
+        parent::__construct('DELETE', $url);
+    }
 }

@@ -78,10 +78,10 @@ use GuzzleHttp\ClientInterface;
  */
 class ShopifyApi
 {
-	/**
-	 * @var ClientInterface
-	 */
-	private $client;
+    /**
+     * @var ClientInterface
+     */
+    private $client;
 
     /**
      * @var string[]

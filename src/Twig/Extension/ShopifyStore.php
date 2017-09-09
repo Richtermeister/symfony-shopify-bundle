@@ -28,17 +28,17 @@ class ShopifyStore extends \Twig_Extension
     }
 
     /**
-	 * @return array
-	 */
-	public function getFunctions()
+     * @return array
+     */
+    public function getFunctions()
     {
-		return [
-			new \Twig_SimpleFunction('embedded_link', [$this, 'embeddedLink']),
+        return [
+            new \Twig_SimpleFunction('embedded_link', [$this, 'embeddedLink']),
             new \Twig_SimpleFunction('shopify_store', [$this, 'shopifyStore']),
-		];
-	}
+        ];
+    }
 
-	public function embeddedLink($storeName, $uri, $uriParams = [])
+    public function embeddedLink($storeName, $uri, $uriParams = [])
     {
         $authParams = $this->hmac->generateParams($storeName);
 

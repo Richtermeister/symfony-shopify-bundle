@@ -10,13 +10,13 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 interface ShopifyStoreInterface extends UserInterface
 {
-	/**
-	 * @return string
-	 */
-	public function getStoreName();
+    /**
+     * @return string
+     */
+    public function getStoreName();
 
-	/**
-	 * @return PrivateAppCredentials|PublicAppCredentials
-	 */
-	public function getCredentials();
+    /**
+     * @return PrivateAppCredentials|PublicAppCredentials
+     */
+    public function getCredentials();
 }

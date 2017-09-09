@@ -5,18 +5,18 @@ use GuzzleHttp\Psr7\Request;
 
 class GetJson extends Request
 {
-	/**
-	 * @param string $url
-	 * @param array $params
-	 */
-	public function __construct($url, array $params = array())
-	{
-	    if (!empty($params)) {
-	        $url .= '?'.http_build_query($params);
+    /**
+     * @param string $url
+     * @param array $params
+     */
+    public function __construct($url, array $params = array())
+    {
+        if (!empty($params)) {
+            $url .= '?'.http_build_query($params);
         }
 
-		parent::__construct('GET', $url, [
+        parent::__construct('GET', $url, [
             'Content-type' => 'application/json',
         ]);
-	}
+    }
 }

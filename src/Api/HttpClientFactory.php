@@ -19,7 +19,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
     {
         $handlers = HandlerStack::create();
         $handlers->push(Middleware::retry(
-            function($retries, RequestInterface $request, ResponseInterface $response = null, \Exception $error = null) {
+            function ($retries, RequestInterface $request, ResponseInterface $response = null, \Exception $error = null) {
 
                 // todo rate limit by this
                 //$response->getHeaderLine('X-Shopify-Shop-Api-Call-Limit');

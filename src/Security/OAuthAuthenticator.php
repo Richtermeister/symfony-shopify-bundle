@@ -15,10 +15,10 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class OAuthAuthenticator extends AbstractGuardAuthenticator
 {
-	/**
-	 * @var HmacSignature
-	 */
-	private $signatureVerifier;
+    /**
+     * @var HmacSignature
+     */
+    private $signatureVerifier;
 
     /**
      * @var ShopifyStoreManagerInterface
@@ -29,13 +29,13 @@ class OAuthAuthenticator extends AbstractGuardAuthenticator
      * @param HmacSignature $signatureVerifier
      * @param \CodeCloud\Bundle\ShopifyBundle\Model\ShopifyStoreManagerInterface $shops
      */
-	public function __construct(
+    public function __construct(
         HmacSignature $signatureVerifier,
         ShopifyStoreManagerInterface $shops
     ) {
-		$this->signatureVerifier = $signatureVerifier;
+        $this->signatureVerifier = $signatureVerifier;
         $this->shops = $shops;
-	}
+    }
 
     public function getCredentials(Request $request)
     {

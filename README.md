@@ -50,3 +50,6 @@ $orders = $api->Order->findAll();
 You can register a list of webhooks you are interested in receiving. 
 The bundle will automatically register them with Shopify and dispatch an event every time a webhook is received.
 
+## Credits
+
+Many thanks to [David Smith](http://code-cloud.uk) for originally creating this bundle.

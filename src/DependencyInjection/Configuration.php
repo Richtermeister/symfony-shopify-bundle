@@ -6,18 +6,18 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 class Configuration implements ConfigurationInterface
 {
-	/**
-	 * Generates the configuration tree builder for the shopify configuration entries
-	 *
-	 * @return \Symfony\Component\Config\Definition\Builder\TreeBuilder The tree builder
-	 */
-	public function getConfigTreeBuilder()
-	{
-		$treeBuilder = new TreeBuilder();
+    /**
+     * Generates the configuration tree builder for the shopify configuration entries
+     *
+     * @return \Symfony\Component\Config\Definition\Builder\TreeBuilder The tree builder
+     */
+    public function getConfigTreeBuilder()
+    {
+        $treeBuilder = new TreeBuilder();
 
-		$rootNode = $treeBuilder->root('code_cloud_shopify');
+        $rootNode = $treeBuilder->root('code_cloud_shopify');
 
-		$rootNode->children()
+        $rootNode->children()
             ->scalarNode('store_manager_id')->isRequired()->cannotBeEmpty()->end()
             ->arrayNode('oauth')->isRequired()
                 ->children()
@@ -32,6 +32,6 @@ class Configuration implements ConfigurationInterface
                 ->defaultValue([])
         ->end();
 
-		return $treeBuilder;
-	}
+        return $treeBuilder;
+    }
 }

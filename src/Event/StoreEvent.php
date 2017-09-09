@@ -7,7 +7,7 @@ use Symfony\Component\EventDispatcher\Event;
 
 class StoreEvent extends Event
 {
-    CONST INSTALLED = 'codecloud_shopify_store_installed';
+    const INSTALLED = 'codecloud_shopify_store_installed';
 
     /**
      * @var ShopifyStoreInterface

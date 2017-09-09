@@ -41,7 +41,6 @@ class WebhookCreator
         $api = $this->apis->getForStore($store->getStoreName());
 
         foreach ($topics as $topic) {
-
             $endpoint = $this->router->generate('codecloud_shopify_webhooks', [
                 'store' => $store->getStoreName(),
                 'topic' => $topic,
