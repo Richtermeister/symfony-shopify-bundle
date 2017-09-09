@@ -2,6 +2,8 @@
 
 This bundle enables quick and easy integration with Shopify.
 
+[![Build Status on Travis](https://img.shields.io/travis/Richtermeister/symfony-shopify-bundle/master.svg)](http://travis-ci.org/Richtermeister/symfony-shopify-bundle)
+
 ## Features
 
 * Shopify OAuth signup flow with a few configuration options.
