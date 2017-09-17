@@ -51,6 +51,38 @@ $orders = $api->Order->findAll();
 You can register a list of webhooks you are interested in receiving. 
 The bundle will automatically register them with Shopify and dispatch an event every time a webhook is received.
 
+```php
+<?php
+
+namespace AppBundle\Event;
+
+use CodeCloud\Bundle\ShopifyBundle\Event\WebhookEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
+class WebhookListener implements EventSubscriberInterface
+{
+    public static function getSubscribedEvents()
+    {
+        return [
+            WebhookEvent::NAME => 'onWebhook',
+        ];
+    }
+
+    public function onWebhook(WebhookEvent $event)
+    {
+        switch ($event->getTopic()) {
+            case 'orders/create':
+                // your custom logic here
+                break;
+            case 'orders/update':
+                // your custom logic here
+                break;
+        }
+    }
+}
+
+```
+
 ## Credits
 
 Many thanks to [David Smith](http://code-cloud.uk) for originally creating this bundle.
