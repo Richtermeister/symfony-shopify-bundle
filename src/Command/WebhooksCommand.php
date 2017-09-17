@@ -3,7 +3,7 @@
 namespace CodeCloud\Bundle\ShopifyBundle\Command;
 
 use CodeCloud\Bundle\ShopifyBundle\Model\ShopifyStoreManagerInterface;
-use CodeCloud\Bundle\ShopifyBundle\Service\WebhookCreator;
+use CodeCloud\Bundle\ShopifyBundle\Service\WebhookCreatorInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class WebhooksCommand extends Command
 {
     /**
-     * @var WebhookCreator
+     * @var WebhookCreatorInterface
      */
     private $webhookCreator;
 
@@ -28,11 +28,11 @@ class WebhooksCommand extends Command
     private $topics = [];
 
     /**
-     * @param WebhookCreator $webhookCreator
+     * @param WebhookCreatorInterface $webhookCreator
      * @param ShopifyStoreManagerInterface $storeManager
      * @param array $topics
      */
-    public function __construct(WebhookCreator $webhookCreator, ShopifyStoreManagerInterface $storeManager, array $topics)
+    public function __construct(WebhookCreatorInterface $webhookCreator, ShopifyStoreManagerInterface $storeManager, array $topics)
     {
         $this->webhookCreator = $webhookCreator;
         $this->storeManager = $storeManager;
@@ -60,13 +60,13 @@ class WebhooksCommand extends Command
         }
 
         if ($input->getOption('list')) {
-            $output->writeln(print_r($this->webhookCreator->listWebhooks($store), true));
+            $output->writeln(print_r($this->webhookCreator->listWebhooks($store->getStoreName()), true));
 
             return;
         }
 
         if ($input->getOption('delete')) {
-            $this->webhookCreator->deleteAllWebhooks($store);
+            $this->webhookCreator->deleteAllWebhooks($store->getStoreName());
             $output->writeln('Webhooks deleted');
 
             return;
@@ -76,7 +76,7 @@ class WebhooksCommand extends Command
             throw new \LogicException('No webhook topics configured');
         }
 
-        $this->webhookCreator->createWebhooks($store, $this->topics);
+        $this->webhookCreator->createWebhooks($store->getStoreName(), $this->topics);
         $output->writeln('Webhooks created');
     }
 }

@@ -4,13 +4,12 @@ namespace CodeCloud\Bundle\ShopifyBundle\Service;
 
 use CodeCloud\Bundle\ShopifyBundle\Api\GenericResource;
 use CodeCloud\Bundle\ShopifyBundle\Api\ShopifyApiFactory;
-use CodeCloud\Bundle\ShopifyBundle\Model\ShopifyStoreInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Creates Webhooks.
  */
-class WebhookCreator
+class WebhookCreator implements WebhookCreatorInterface
 {
     /**
      * @var ShopifyApiFactory
@@ -33,16 +32,15 @@ class WebhookCreator
     }
 
     /**
-     * @param ShopifyStoreInterface $store
-     * @param array $topics
+     * {@inheritdoc}
      */
-    public function createWebhooks(ShopifyStoreInterface $store, array $topics)
+    public function createWebhooks(string $storeName, array $topics)
     {
-        $api = $this->apis->getForStore($store->getStoreName());
+        $api = $this->apis->getForStore($storeName);
 
         foreach ($topics as $topic) {
             $endpoint = $this->router->generate('codecloud_shopify_webhooks', [
-                'store' => $store->getStoreName(),
+                'store' => $storeName,
                 'topic' => $topic,
             ], UrlGeneratorInterface::ABSOLUTE_URL);
 
@@ -57,22 +55,21 @@ class WebhookCreator
     }
 
     /**
-     * @param ShopifyStoreInterface $store
-     * @return array|\CodeCloud\Bundle\ShopifyBundle\Api\GenericResource[]
+     * {@inheritdoc}
      */
-    public function listWebhooks(ShopifyStoreInterface $store)
+    public function listWebhooks(string $storeName)
     {
-        $api = $this->apis->getForStore($store->getStoreName());
+        $api = $this->apis->getForStore($storeName);
 
         return $api->Webhook->findAll();
     }
 
     /**
-     * @param ShopifyStoreInterface $store
+     * {@inheritdoc}
      */
-    public function deleteAllWebhooks(ShopifyStoreInterface $store)
+    public function deleteAllWebhooks(string $storeName)
     {
-        $api = $this->apis->getForStore($store->getStoreName());
+        $api = $this->apis->getForStore($storeName);
 
         foreach ($api->Webhook->findAll() as $webhook) {
             $api->Webhook->delete($webhook['id']);

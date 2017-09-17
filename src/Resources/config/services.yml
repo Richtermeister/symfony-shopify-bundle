@@ -10,6 +10,7 @@ services:
           - "%codecloud_shopify.oauth%"
           - "@codecloud_shopify.http.client"
           - "@codecloud_shopify.store_manager"
+          - "@event_dispatcher"
 
   codecloud_shopify.controller.webhooks:
       class: CodeCloud\Bundle\ShopifyBundle\Controller\WebhookController
@@ -50,7 +51,7 @@ services:
       public: false
       class: CodeCloud\Bundle\ShopifyBundle\Security\HmacSignature
       arguments:
-          - "%codecloud_shopify%"
+          - "%codecloud_shopify.oauth.shared_secret%"
 
   codecloud_shopify.oauth.authenticator:
       public: false

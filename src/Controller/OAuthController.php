@@ -2,8 +2,10 @@
 
 namespace CodeCloud\Bundle\ShopifyBundle\Controller;
 
+use CodeCloud\Bundle\ShopifyBundle\Event\PreAuthEvent;
 use CodeCloud\Bundle\ShopifyBundle\Model\ShopifyStoreManagerInterface;
 use GuzzleHttp\ClientInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -33,16 +35,23 @@ class OAuthController
     private $stores;
 
     /**
+     * @var EventDispatcherInterface
+     */
+    private $dispatcher;
+
+    /**
      * @param UrlGeneratorInterface $router
      * @param array $config
      * @param ClientInterface $client
      * @param ShopifyStoreManagerInterface $stores
+     * @param EventDispatcherInterface $dispatcher
      */
     public function __construct(
         UrlGeneratorInterface $router,
         array $config,
         ClientInterface $client,
-        ShopifyStoreManagerInterface $stores
+        ShopifyStoreManagerInterface $stores,
+        EventDispatcherInterface $dispatcher
     ) {
         $this->router = $router;
         $this->client = $client;
@@ -51,6 +60,7 @@ class OAuthController
             ->setRequired(['api_key', 'shared_secret', 'scope', 'redirect_route'])
             ->resolve($config)
         ;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -63,6 +73,13 @@ class OAuthController
     {
         if (!$storeName = $request->get('shop')) {
             throw new BadRequestHttpException('Request is missing required parameter "shop".');
+        }
+
+        if ($response = $this->dispatcher->dispatch(
+            PreAuthEvent::NAME,
+            new PreAuthEvent($storeName))->getResponse()
+        ) {
+            return $response;
         }
 
         $verifyUrl = $this->router->generate('codecloud_shopify_verify', [], UrlGeneratorInterface::ABSOLUTE_URL);

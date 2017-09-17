@@ -20,6 +20,10 @@ class CodeCloudShopifyExtension extends Extension
         $container->setParameter('codecloud_shopify.oauth', $config['oauth']);
         $container->setParameter('codecloud_shopify.webhooks', $config['webhooks']);
 
+        foreach ($config['oauth'] as $key => $value) {
+            $container->setParameter('codecloud_shopify.oauth.'.$key, $value);
+        }
+
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');
 

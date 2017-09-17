@@ -2,7 +2,6 @@
 
 namespace CodeCloud\Bundle\ShopifyBundle\Security;
 
-use CodeCloud\Bundle\ShopifyBundle\Security\HmacSignature;
 use CodeCloud\Bundle\ShopifyBundle\Model\ShopifyStoreManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

@@ -9,15 +9,11 @@ class HmacSignature
     private $sharedSecret;
 
     /**
-     * @param array $config
+     * @param string $sharedSecret
      */
-    public function __construct(array $config)
+    public function __construct(string $sharedSecret)
     {
-        if (empty($config['oauth']['shared_secret'])) {
-            throw new \InvalidArgumentException('No shared secret has been defined');
-        }
-
-        $this->sharedSecret = $config['oauth']['shared_secret'];
+        $this->sharedSecret = $sharedSecret;
     }
 
     /**
