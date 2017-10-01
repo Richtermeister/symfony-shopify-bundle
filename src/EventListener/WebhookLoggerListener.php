@@ -32,8 +32,8 @@ class WebhookLoggerListener implements EventSubscriberInterface
     {
         $this->logger->info('Shopify Webhook Received', [
             'topic' => $event->getTopic(),
-            'store' => $event->getStore()->getStoreName(),
-            'payload' => $event->getResource()->toArray(),
+            'store' => $event->getStore(),
+            'resource' => $event->getResource(),
         ]);
     }
 }

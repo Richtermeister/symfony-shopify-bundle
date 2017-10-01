@@ -5,9 +5,15 @@ namespace CodeCloud\Bundle\ShopifyBundle\Event;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Dispatched when a shop requests authorization, before authorization begins.
+ *
+ * This event allows you to decline authorizing certain stores or redirect
+ * to a more elaborate signup process.
+ */
 class PreAuthEvent extends Event
 {
-    const NAME = 'codecloud.shopify.pre_auth';
+    const NAME = 'codecloud_shopify.pre_auth';
 
     /**
      * @var string

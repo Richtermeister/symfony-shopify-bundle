@@ -6,6 +6,7 @@ use CodeCloud\Bundle\ShopifyBundle\Event\PostAuthEvent;
 use CodeCloud\Bundle\ShopifyBundle\Event\PreAuthEvent;
 use CodeCloud\Bundle\ShopifyBundle\Exception\InsufficientScopeException;
 use CodeCloud\Bundle\ShopifyBundle\Model\ShopifyStoreManagerInterface;
+use CodeCloud\Bundle\ShopifyBundle\Security\HmacSignature;
 use GuzzleHttp\ClientInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -47,18 +48,25 @@ class OAuthController
     private $dispatcher;
 
     /**
+     * @var HmacSignature
+     */
+    private $hmacSignature;
+
+    /**
      * @param UrlGeneratorInterface $router
      * @param array $config
      * @param ClientInterface $client
      * @param ShopifyStoreManagerInterface $stores
      * @param EventDispatcherInterface $dispatcher
+     * @param HmacSignature $hmacSignature
      */
     public function __construct(
         UrlGeneratorInterface $router,
         array $config,
         ClientInterface $client,
         ShopifyStoreManagerInterface $stores,
-        EventDispatcherInterface $dispatcher
+        EventDispatcherInterface $dispatcher,
+        HmacSignature $hmacSignature
     ) {
         $this->router = $router;
         $this->client = $client;
@@ -68,6 +76,7 @@ class OAuthController
             ->resolve($config)
         ;
         $this->dispatcher = $dispatcher;
+        $this->hmacSignature = $hmacSignature;
     }
 
     /**
@@ -119,11 +128,16 @@ class OAuthController
         $authCode  = $request->get('code');
         $storeName = $request->get('shop');
         $nonce     = $request->get('state');
+        $hmac      = $request->get('hmac');
 
         // todo validate store name
 
         if (!$authCode || !$storeName) {
             throw new BadRequestHttpException('Request is missing required parameters: "code", "shop".');
+        }
+
+        if (!$this->hmacSignature->isValid($hmac, $request->query->all())) {
+            throw new BadRequestHttpException('Invalid HMAC Signature');
         }
 
         $params = [

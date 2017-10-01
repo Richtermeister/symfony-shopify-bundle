@@ -5,9 +5,16 @@ namespace CodeCloud\Bundle\ShopifyBundle\Event;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Dispatched after a shop has been authorized to use the application.
+ *
+ * You can handle this event to handle the access token in whichever way your
+ * authentication strategy requires. For example, store it in the session, or
+ * pass it to a client.
+ */
 class PostAuthEvent extends Event
 {
-    const NAME = 'codecloud.shopify.post_auth';
+    const NAME = 'codecloud_shopify.post_auth';
 
     /**
      * @var string

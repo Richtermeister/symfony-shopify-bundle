@@ -11,6 +11,7 @@ services:
           - "@codecloud_shopify.http.client"
           - "@codecloud_shopify.store_manager"
           - "@event_dispatcher"
+          - "@codecloud_shopify.signer"
 
   codecloud_shopify.controller.webhooks:
       class: CodeCloud\Bundle\ShopifyBundle\Controller\WebhookController
