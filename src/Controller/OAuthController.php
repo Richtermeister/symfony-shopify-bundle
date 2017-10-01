@@ -86,6 +86,8 @@ class OAuthController
         $verifyUrl = str_replace("http://", "https://", $verifyUrl);
         $nonce = uniqid();
 
+        $this->stores->preAuthenticateStore($storeName, $nonce);
+
         $params = [
             'client_id'    => $this->config['api_key'],
             'scope'        => $this->config['scope'],
@@ -107,9 +109,9 @@ class OAuthController
      */
     public function verify(Request $request)
     {
-        $authCode = $request->get('code');
+        $authCode  = $request->get('code');
         $storeName = $request->get('shop');
-        $nonce = $request->get('state');
+        $nonce     = $request->get('state');
 
         if (!$authCode || !$storeName) {
             throw new BadRequestHttpException('Request is missing required parameters: "code", "shop".');
@@ -130,7 +132,7 @@ class OAuthController
         $responseJson = \GuzzleHttp\json_decode($response->getBody(), true);
 
         $accessToken = $responseJson['access_token'];
-        $this->stores->authenticateStore($storeName, $accessToken);
+        $this->stores->authenticateStore($storeName, $accessToken, $nonce);
 
         return new RedirectResponse(
             $this->router->generate($this->config['redirect_route'], $request->query->all())

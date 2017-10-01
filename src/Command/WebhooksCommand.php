@@ -2,6 +2,7 @@
 
 namespace CodeCloud\Bundle\ShopifyBundle\Command;
 
+use CodeCloud\Bundle\ShopifyBundle\Exception\StoreNotFoundException;
 use CodeCloud\Bundle\ShopifyBundle\Model\ShopifyStoreManagerInterface;
 use CodeCloud\Bundle\ShopifyBundle\Service\WebhookCreatorInterface;
 use Symfony\Component\Console\Command\Command;
@@ -56,7 +57,7 @@ class WebhooksCommand extends Command
         $store = $this->storeManager->findStoreByName($input->getArgument('store'));
 
         if (!$store) {
-            throw new \StoreNotFoundException($input->getArgument('store'));
+            throw new StoreNotFoundException($input->getArgument('store'));
         }
 
         if ($input->getOption('list')) {

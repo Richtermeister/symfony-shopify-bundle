@@ -1,6 +1,8 @@
 <?php
 
-class StoreNotFoundException extends InvalidArgumentException
+namespace CodeCloud\Bundle\ShopifyBundle\Exception;
+
+class StoreNotFoundException extends \InvalidArgumentException
 {
     public function __construct($storeName)
     {
