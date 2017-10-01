@@ -14,6 +14,8 @@ interface ShopifyStoreManagerInterface
     public function findStoreByName($storeName);
 
     /**
+     * Return whether the specified store exists.
+     *
      * @param string $storeName
      * @return bool
      */

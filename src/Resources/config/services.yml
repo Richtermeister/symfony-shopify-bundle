@@ -60,9 +60,9 @@ services:
       arguments:
           - "@router"
 
-  codecloud_shopify.provider.store:
+  codecloud_shopify.security.admin_user_provider:
       public: false
-      class: CodeCloud\Bundle\ShopifyBundle\Security\ShopifyStoreProvider
+      class: CodeCloud\Bundle\ShopifyBundle\Security\ShopifyAdminUserProvider
       arguments:
           - "@codecloud_shopify.store_manager"
 
