@@ -84,11 +84,13 @@ class OAuthController
 
         $verifyUrl = $this->router->generate('codecloud_shopify_verify', [], UrlGeneratorInterface::ABSOLUTE_URL);
         $verifyUrl = str_replace("http://", "https://", $verifyUrl);
+        $nonce = uniqid();
 
         $params = [
             'client_id'    => $this->config['api_key'],
             'scope'        => $this->config['scope'],
             'redirect_uri' => $verifyUrl,
+            'state'        => $nonce,
         ];
 
         $shopifyEndpoint = 'https://%s/admin/oauth/authorize?%s';
@@ -107,6 +109,7 @@ class OAuthController
     {
         $authCode = $request->get('code');
         $storeName = $request->get('shop');
+        $nonce = $request->get('state');
 
         if (!$authCode || !$storeName) {
             throw new BadRequestHttpException('Request is missing required parameters: "code", "shop".');
