@@ -38,7 +38,7 @@ class PreAuthEvent extends Event
     /**
      * @return Response
      */
-    public function getResponse(): Response
+    public function getResponse(): ?Response
     {
         return $this->response;
     }
