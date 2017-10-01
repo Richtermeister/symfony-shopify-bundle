@@ -79,3 +79,10 @@ services:
       arguments:
           - "@codecloud_shopify.shopify_api_factory"
           - "@router"
+
+  codecloud_shopify.listener.session_authentication:
+      class: CodeCloud\Bundle\ShopifyBundle\EventListener\SessionAuthenticationListener
+      arguments:
+          - "@request_stack"
+      tags:
+          - { name: kernel.event_subscriber }

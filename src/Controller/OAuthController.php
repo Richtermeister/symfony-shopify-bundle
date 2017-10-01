@@ -2,7 +2,9 @@
 
 namespace CodeCloud\Bundle\ShopifyBundle\Controller;
 
+use CodeCloud\Bundle\ShopifyBundle\Event\PostAuthEvent;
 use CodeCloud\Bundle\ShopifyBundle\Event\PreAuthEvent;
+use CodeCloud\Bundle\ShopifyBundle\Exception\InsufficientScopeException;
 use CodeCloud\Bundle\ShopifyBundle\Model\ShopifyStoreManagerInterface;
 use GuzzleHttp\ClientInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -12,6 +14,11 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+/**
+ * Handles the OAuth handshake with Shopify.
+ *
+ * @see https://help.shopify.com/api/getting-started/authentication/oauth
+ */
 class OAuthController
 {
     /**
@@ -113,6 +120,8 @@ class OAuthController
         $storeName = $request->get('shop');
         $nonce     = $request->get('state');
 
+        // todo validate store name
+
         if (!$authCode || !$storeName) {
             throw new BadRequestHttpException('Request is missing required parameters: "code", "shop".');
         }
@@ -131,11 +140,22 @@ class OAuthController
         $response = $this->client->request('POST', 'https://' . $storeName . '/admin/oauth/access_token', $params);
         $responseJson = \GuzzleHttp\json_decode($response->getBody(), true);
 
+        if ($responseJson['scope'] != $this->config['scope']) {
+            throw new InsufficientScopeException($this->config['scope'], $responseJson['scope']);
+        }
+
         $accessToken = $responseJson['access_token'];
         $this->stores->authenticateStore($storeName, $accessToken, $nonce);
 
+        if ($response = $this->dispatcher->dispatch(
+            PostAuthEvent::NAME,
+            new PostAuthEvent($storeName, $accessToken))->getResponse()
+        ) {
+            return $response;
+        }
+
         return new RedirectResponse(
-            $this->router->generate($this->config['redirect_route'], $request->query->all())
+            $this->router->generate($this->config['redirect_route'])
         );
     }
 }
