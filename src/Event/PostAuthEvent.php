@@ -31,6 +31,7 @@ class PostAuthEvent extends Event
     public function __construct(string $shop, string $accessToken)
     {
         $this->shop = $shop;
+        $this->accessToken = $accessToken;
     }
 
     /**
