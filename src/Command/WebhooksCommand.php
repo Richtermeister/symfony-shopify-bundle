@@ -54,20 +54,18 @@ class WebhooksCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $store = $this->storeManager->findStoreByName($input->getArgument('store'));
-
-        if (!$store) {
-            throw new StoreNotFoundException($input->getArgument('store'));
+        if (!$this->storeManager->storeExists($store = $input->getArgument('store'))) {
+            throw new StoreNotFoundException($store);
         }
 
         if ($input->getOption('list')) {
-            $output->writeln(print_r($this->webhookCreator->listWebhooks($store->getStoreName()), true));
+            $output->writeln(print_r($this->webhookCreator->listWebhooks($store), true));
 
             return;
         }
 
         if ($input->getOption('delete')) {
-            $this->webhookCreator->deleteAllWebhooks($store->getStoreName());
+            $this->webhookCreator->deleteAllWebhooks($store);
             $output->writeln('Webhooks deleted');
 
             return;
@@ -77,7 +75,8 @@ class WebhooksCommand extends Command
             throw new \LogicException('No webhook topics configured');
         }
 
-        $this->webhookCreator->createWebhooks($store->getStoreName(), $this->topics);
+        $this->webhookCreator->createWebhooks($store, $this->topics);
+
         $output->writeln('Webhooks created');
     }
 }

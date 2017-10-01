@@ -14,6 +14,12 @@ interface ShopifyStoreManagerInterface
     public function findStoreByName($storeName);
 
     /**
+     * @param string $storeName
+     * @return bool
+     */
+    public function storeExists($storeName): bool;
+
+    /**
      * This method is called when a store initiates authentication via Shopify OAuth.
      *
      * It is recommended that you store the `nonce` and `store name` for use in the following call

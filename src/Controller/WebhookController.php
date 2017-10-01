@@ -44,7 +44,7 @@ class WebhookController
             throw new NotFoundHttpException();
         }
 
-        if (!$store = $this->storeManager->findStoreByName($storeName)) {
+        if (!$this->storeManager->storeExists($storeName)) {
             throw new NotFoundHttpException();
         }
 
