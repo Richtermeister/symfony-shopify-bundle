@@ -2,7 +2,6 @@
 
 namespace CodeCloud\Bundle\ShopifyBundle\Api;
 
-use CodeCloud\Bundle\ShopifyBundle\Model\ShopifyStoreInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
@@ -15,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class HttpClientFactory implements HttpClientFactoryInterface
 {
-    public function createHttpClient(ShopifyStoreInterface $shopifyStore)
+    public function createHttpClient($storeName, $credentials)
     {
         $handlers = HandlerStack::create();
         $handlers->push(Middleware::retry(
@@ -42,11 +41,9 @@ class HttpClientFactory implements HttpClientFactoryInterface
         ));
 
         $options = [
-            'base_uri' => 'https://' . $shopifyStore->getStoreName(),
+            'base_uri' => 'https://' . $storeName,
             //'handler' => $handlers,
         ];
-
-        $credentials = $shopifyStore->getCredentials();
 
         switch (true) {
             case  $credentials instanceof PublicAppCredentials:

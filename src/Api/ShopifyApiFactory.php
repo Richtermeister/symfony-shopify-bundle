@@ -37,11 +37,8 @@ class ShopifyApiFactory
      */
     public function getForStore($storeName)
     {
-        if (!$store = $this->storeManager->findStoreByName($storeName)) {
-            throw new \InvalidArgumentException(sprintf('Store %s does not exist', $storeName));
-        }
-
-        $client = $this->httpClientFactory->createHttpClient($store);
+        $accessToken = $this->storeManager->getAccessToken($storeName);
+        $client = $this->httpClientFactory->createHttpClient($storeName, new PublicAppCredentials($accessToken));
 
         return new ShopifyApi($client);
     }

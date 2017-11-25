@@ -9,9 +9,9 @@ interface ShopifyStoreManagerInterface
 {
     /**
      * @param string $storeName
-     * @return ShopifyStoreInterface
+     * @return string
      */
-    public function findStoreByName($storeName);
+    public function getAccessToken($storeName): string;
 
     /**
      * Return whether the specified store exists.

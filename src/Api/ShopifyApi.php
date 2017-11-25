@@ -30,6 +30,7 @@ use CodeCloud\Bundle\ShopifyBundle\Api\Endpoint\ProvinceEndpoint;
 use CodeCloud\Bundle\ShopifyBundle\Api\Endpoint\RecurringApplicationChargeEndpoint;
 use CodeCloud\Bundle\ShopifyBundle\Api\Endpoint\RedirectEndpoint;
 use CodeCloud\Bundle\ShopifyBundle\Api\Endpoint\RefundEndpoint;
+use CodeCloud\Bundle\ShopifyBundle\Api\Endpoint\ScriptTagEndpoint;
 use CodeCloud\Bundle\ShopifyBundle\Api\Endpoint\ShopEndpoint;
 use CodeCloud\Bundle\ShopifyBundle\Api\Endpoint\SmartCollectionEndpoint;
 use CodeCloud\Bundle\ShopifyBundle\Api\Endpoint\ThemeEndpoint;
@@ -69,6 +70,7 @@ use GuzzleHttp\ClientInterface;
  * @property RecurringApplicationChargeEndpoint RecurringApplicationCharge
  * @property RedirectEndpoint Redirect
  * @property RefundEndpoint Refund
+ * @property ScriptTagEndpoint ScriptTag
  * @property ShopEndpoint Shop
  * @property SmartCollectionEndpoint SmartCollection
  * @property ThemeEndpoint Theme
@@ -115,6 +117,7 @@ class ShopifyApi
         'RecurringApplicationCharge' => RecurringApplicationChargeEndpoint::class,
         'Redirect' => RedirectEndpoint::class,
         'Refund' => RefundEndpoint::class,
+        'ScriptTag' => ScriptTagEndpoint::class,
         'Shop' => ShopEndpoint::class,
         'SmartCollection' => SmartCollectionEndpoint::class,
         'Theme' => ThemeEndpoint::class,
