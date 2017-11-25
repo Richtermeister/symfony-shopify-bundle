@@ -43,7 +43,7 @@ class ScriptTagEndpoint extends AbstractEndpoint
         $request = new PostJson('/admin/script_tags.json', array('script_tag' => $resource->toArray()));
         $response = $this->send($request);
 
-        return $this->create($response->get('script_tag'));
+        return $this->createEntity($response->get('script_tag'));
     }
 
     /**
@@ -56,7 +56,7 @@ class ScriptTagEndpoint extends AbstractEndpoint
         $request = new PutJson('/admin/script_tags/' . $id . '.json', array('script_tag' => $resource->toArray()));
         $response = $this->send($request);
 
-        return $this->create($response->get('script_tag'));
+        return $this->createEntity($response->get('script_tag'));
     }
 
     /**

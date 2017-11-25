@@ -83,6 +83,36 @@ class WebhookListener implements EventSubscriberInterface
 
 ```
 
+## Security & Authentication
+
+By default, the bundle provides session-based authentication for admin areas embedded within Shopify.
+
+```yaml
+security:
+    providers:
+        codecloud_shopify:
+            id: codecloud_shopify.security.admin_user_provider
+
+    firewalls:
+        admin:
+            pattern: ^/admin
+            provider: codecloud_shopify
+            guard:
+                authenticators:
+                    - codecloud_shopify.security.session_authenticator
+```
+
+Authenticated users will be an instance of `CodeCloud\Bundle\ShopifyBundle\Security\ShopifyAdminUser`,
+their username will be the name of the authenticated store (storename.myshopify.com), and their roles will include `ROLE_SHOPIFY_ADMIN`.
+
+For development purposes, you can impersonate any existing store.
+
+```yaml
+# in config_dev.yml
+code_cloud_shopify:
+    dev_impersonate_store: "{store-name}.myshopify.com"
+```
+
 ## Credits
 
 Many thanks to [David Smith](http://code-cloud.uk) for originally creating this bundle.

@@ -1,8 +1,10 @@
 <?php
 namespace CodeCloud\Bundle\ShopifyBundle\DependencyInjection;
 
+use CodeCloud\Bundle\ShopifyBundle\Security\DevAuthenticator;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
@@ -28,5 +30,13 @@ class CodeCloudShopifyExtension extends Extension
         $loader->load('services.yml');
 
         $container->setAlias('codecloud_shopify.store_manager', $config['store_manager_id']);
+
+        if (!empty($config['dev_impersonate_store'])) {
+            $definition = new Definition(
+                DevAuthenticator::class,
+                [$config['dev_impersonate_store']]
+            );
+            $container->setDefinition('codecloud_shopify.security.session_authenticator', $definition);
+        }
     }
 }

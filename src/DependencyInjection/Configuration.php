@@ -30,6 +30,9 @@ class Configuration implements ConfigurationInterface
             ->arrayNode('webhooks')
                 ->prototype('scalar')->end()
                 ->defaultValue([])
+            ->end()
+            ->scalarNode('dev_impersonate_store')
+            ->end()
         ->end();
 
         return $treeBuilder;
