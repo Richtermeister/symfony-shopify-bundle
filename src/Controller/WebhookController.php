@@ -2,7 +2,6 @@
 
 namespace CodeCloud\Bundle\ShopifyBundle\Controller;
 
-use CodeCloud\Bundle\ShopifyBundle\Api\GenericResource;
 use CodeCloud\Bundle\ShopifyBundle\Event\WebhookEvent;
 use CodeCloud\Bundle\ShopifyBundle\Model\ShopifyStoreManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -38,14 +37,14 @@ class WebhookController
      */
     public function handleWebhook(Request $request)
     {
-        $topic = $request->query->get('topic');
+        $topic     = $request->query->get('topic');
         $storeName = $request->query->get('store');
 
         if (!$topic || !$storeName) {
             throw new NotFoundHttpException();
         }
 
-        if (!$store = $this->storeManager->findStoreByName($storeName)) {
+        if (!$this->storeManager->storeExists($storeName)) {
             throw new NotFoundHttpException();
         }
 
@@ -53,8 +52,8 @@ class WebhookController
 
         $this->eventDispatcher->dispatch(WebhookEvent::NAME, new WebhookEvent(
             $topic,
-            $store,
-            GenericResource::create($payload)
+            $storeName,
+            $payload
         ));
 
         return new Response('Shopify Webhook Received');

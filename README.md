@@ -48,3 +48,68 @@ $orders = $api->Order->findAll();
 You can register a list of webhooks you are interested in receiving. 
 The bundle will automatically register them with Shopify and dispatch an event every time a webhook is received.
 
+```php
+<?php
+
+namespace AppBundle\Event;
+
+use CodeCloud\Bundle\ShopifyBundle\Event\WebhookEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
+class WebhookListener implements EventSubscriberInterface
+{
+    public static function getSubscribedEvents()
+    {
+        return [
+            WebhookEvent::NAME => 'onWebhook',
+        ];
+    }
+
+    public function onWebhook(WebhookEvent $event)
+    {
+        switch ($event->getTopic()) {
+            case 'orders/create':
+                // your custom logic here
+                break;
+            case 'orders/update':
+                // your custom logic here
+                break;
+        }
+    }
+}
+
+```
+
+## Security & Authentication
+
+By default, the bundle provides session-based authentication for admin areas embedded within Shopify.
+
+```yaml
+security:
+    providers:
+        codecloud_shopify:
+            id: codecloud_shopify.security.admin_user_provider
+
+    firewalls:
+        admin:
+            pattern: ^/admin
+            provider: codecloud_shopify
+            guard:
+                authenticators:
+                    - codecloud_shopify.security.session_authenticator
+```
+
+Authenticated users will be an instance of `CodeCloud\Bundle\ShopifyBundle\Security\ShopifyAdminUser`,
+their username will be the name of the authenticated store (storename.myshopify.com), and their roles will include `ROLE_SHOPIFY_ADMIN`.
+
+For development purposes, you can impersonate any existing store.
+
+```yaml
+# in config_dev.yml
+code_cloud_shopify:
+    dev_impersonate_store: "{store-name}.myshopify.com"
+```
+
+## Credits
+
+Many thanks to [David Smith](http://code-cloud.uk) for originally creating this bundle.

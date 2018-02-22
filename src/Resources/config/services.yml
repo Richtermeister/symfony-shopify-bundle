@@ -10,6 +10,8 @@ services:
           - "%codecloud_shopify.oauth%"
           - "@codecloud_shopify.http.client"
           - "@codecloud_shopify.store_manager"
+          - "@event_dispatcher"
+          - "@codecloud_shopify.signer"
 
   codecloud_shopify.controller.webhooks:
       class: CodeCloud\Bundle\ShopifyBundle\Controller\WebhookController
@@ -50,18 +52,17 @@ services:
       public: false
       class: CodeCloud\Bundle\ShopifyBundle\Security\HmacSignature
       arguments:
-          - "%codecloud_shopify%"
+          - "%codecloud_shopify.oauth.shared_secret%"
 
-  codecloud_shopify.oauth.authenticator:
+  codecloud_shopify.security.session_authenticator:
       public: false
-      class: CodeCloud\Bundle\ShopifyBundle\Security\OAuthAuthenticator
+      class: CodeCloud\Bundle\ShopifyBundle\Security\SessionAuthenticator
       arguments:
-          - "@codecloud_shopify.signer"
-          - "@codecloud_shopify.store_manager"
+          - "@router"
 
-  codecloud_shopify.provider.store:
+  codecloud_shopify.security.admin_user_provider:
       public: false
-      class: CodeCloud\Bundle\ShopifyBundle\Security\ShopifyStoreProvider
+      class: CodeCloud\Bundle\ShopifyBundle\Security\ShopifyAdminUserProvider
       arguments:
           - "@codecloud_shopify.store_manager"
 
@@ -78,3 +79,10 @@ services:
       arguments:
           - "@codecloud_shopify.shopify_api_factory"
           - "@router"
+
+  codecloud_shopify.listener.session_authentication:
+      class: CodeCloud\Bundle\ShopifyBundle\EventListener\SessionAuthenticationListener
+      arguments:
+          - "@request_stack"
+      tags:
+          - { name: kernel.event_subscriber }

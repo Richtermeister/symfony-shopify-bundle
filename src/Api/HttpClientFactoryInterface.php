@@ -2,7 +2,6 @@
 
 namespace CodeCloud\Bundle\ShopifyBundle\Api;
 
-use CodeCloud\Bundle\ShopifyBundle\Model\ShopifyStoreInterface;
 use GuzzleHttp\ClientInterface;
 
 /**
@@ -12,8 +11,9 @@ use GuzzleHttp\ClientInterface;
 interface HttpClientFactoryInterface
 {
     /**
-     * @param ShopifyStoreInterface $shopifyStore
+     * @param string $storeName
+     * @param PrivateAppCredentials|PublicAppCredentials $credentials
      * @return ClientInterface
      */
-    public function createHttpClient(ShopifyStoreInterface $shopifyStore);
+    public function createHttpClient($storeName, $credentials);
 }

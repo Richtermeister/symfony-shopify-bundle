@@ -2,14 +2,24 @@
 
 namespace CodeCloud\Bundle\ShopifyBundle\Controller;
 
+use CodeCloud\Bundle\ShopifyBundle\Event\PostAuthEvent;
+use CodeCloud\Bundle\ShopifyBundle\Event\PreAuthEvent;
+use CodeCloud\Bundle\ShopifyBundle\Exception\InsufficientScopeException;
 use CodeCloud\Bundle\ShopifyBundle\Model\ShopifyStoreManagerInterface;
+use CodeCloud\Bundle\ShopifyBundle\Security\HmacSignature;
 use GuzzleHttp\ClientInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+/**
+ * Handles the OAuth handshake with Shopify.
+ *
+ * @see https://help.shopify.com/api/getting-started/authentication/oauth
+ */
 class OAuthController
 {
     /**
@@ -33,16 +43,30 @@ class OAuthController
     private $stores;
 
     /**
+     * @var EventDispatcherInterface
+     */
+    private $dispatcher;
+
+    /**
+     * @var HmacSignature
+     */
+    private $hmacSignature;
+
+    /**
      * @param UrlGeneratorInterface $router
      * @param array $config
      * @param ClientInterface $client
      * @param ShopifyStoreManagerInterface $stores
+     * @param EventDispatcherInterface $dispatcher
+     * @param HmacSignature $hmacSignature
      */
     public function __construct(
         UrlGeneratorInterface $router,
         array $config,
         ClientInterface $client,
-        ShopifyStoreManagerInterface $stores
+        ShopifyStoreManagerInterface $stores,
+        EventDispatcherInterface $dispatcher,
+        HmacSignature $hmacSignature
     ) {
         $this->router = $router;
         $this->client = $client;
@@ -51,6 +75,8 @@ class OAuthController
             ->setRequired(['api_key', 'shared_secret', 'scope', 'redirect_route'])
             ->resolve($config)
         ;
+        $this->dispatcher = $dispatcher;
+        $this->hmacSignature = $hmacSignature;
     }
 
     /**
@@ -65,13 +91,24 @@ class OAuthController
             throw new BadRequestHttpException('Request is missing required parameter "shop".');
         }
 
+        if ($response = $this->dispatcher->dispatch(
+            PreAuthEvent::NAME,
+            new PreAuthEvent($storeName))->getResponse()
+        ) {
+            return $response;
+        }
+
         $verifyUrl = $this->router->generate('codecloud_shopify_verify', [], UrlGeneratorInterface::ABSOLUTE_URL);
-        $verifyUrl = str_replace("http", "https", $verifyUrl);
+        $verifyUrl = str_replace("http://", "https://", $verifyUrl);
+        $nonce = uniqid();
+
+        $this->stores->preAuthenticateStore($storeName, $nonce);
 
         $params = [
             'client_id'    => $this->config['api_key'],
             'scope'        => $this->config['scope'],
             'redirect_uri' => $verifyUrl,
+            'state'        => $nonce,
         ];
 
         $shopifyEndpoint = 'https://%s/admin/oauth/authorize?%s';
@@ -88,11 +125,19 @@ class OAuthController
      */
     public function verify(Request $request)
     {
-        $authCode = $request->get('code');
+        $authCode  = $request->get('code');
         $storeName = $request->get('shop');
+        $nonce     = $request->get('state');
+        $hmac      = $request->get('hmac');
+
+        // todo validate store name
 
         if (!$authCode || !$storeName) {
             throw new BadRequestHttpException('Request is missing required parameters: "code", "shop".');
+        }
+
+        if (!$this->hmacSignature->isValid($hmac, $request->query->all())) {
+            throw new BadRequestHttpException('Invalid HMAC Signature');
         }
 
         $params = [
@@ -109,11 +154,22 @@ class OAuthController
         $response = $this->client->request('POST', 'https://' . $storeName . '/admin/oauth/access_token', $params);
         $responseJson = \GuzzleHttp\json_decode($response->getBody(), true);
 
+        if ($responseJson['scope'] != $this->config['scope']) {
+            throw new InsufficientScopeException($this->config['scope'], $responseJson['scope']);
+        }
+
         $accessToken = $responseJson['access_token'];
-        $this->stores->authenticateStore($storeName, $accessToken);
+        $this->stores->authenticateStore($storeName, $accessToken, $nonce);
+
+        if ($response = $this->dispatcher->dispatch(
+            PostAuthEvent::NAME,
+            new PostAuthEvent($storeName, $accessToken))->getResponse()
+        ) {
+            return $response;
+        }
 
         return new RedirectResponse(
-            $this->router->generate($this->config['redirect_route'], $request->query->all())
+            $this->router->generate($this->config['redirect_route'])
         );
     }
 }

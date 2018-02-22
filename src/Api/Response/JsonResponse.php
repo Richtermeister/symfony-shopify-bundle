@@ -1,80 +1,81 @@
 <?php
+
 namespace CodeCloud\Bundle\ShopifyBundle\Api\Response;
 
 use Psr\Http\Message\ResponseInterface as PsrResponse;
 
 class JsonResponse implements ResponseInterface
 {
-	/**
-	 * @var array
-	 */
-	private $decoded;
+    /**
+     * @var array
+     */
+    private $decoded;
 
-	/**
-	 * @var PsrResponse
-	 */
-	private $response;
+    /**
+     * @var PsrResponse
+     */
+    private $response;
 
-	/**
-	 * @param PsrResponse $response
-	 */
-	public function __construct(PsrResponse $response)
-	{
-		$this->response = $response;
-	}
+    /**
+     * @param PsrResponse $response
+     */
+    public function __construct(PsrResponse $response)
+    {
+        $this->response = $response;
+    }
 
-	/**
-	 * @return PsrResponse
-	 */
-	public function getHttpResponse()
-	{
-		return $this->response;
-	}
+    /**
+     * @return PsrResponse
+     */
+    public function getHttpResponse()
+    {
+        return $this->response;
+    }
 
-	/**
-	 * Access elements of the JSON response using dot notation
-	 * @param null $item
-	 * @param null $default
-	 * @return mixed
-	 */
-	public function get($item = null, $default = null)
-	{
-		if (is_null($item)) {
-			return $default;
-		}
+    /**
+     * Access elements of the JSON response using dot notation
+     * @param null $item
+     * @param null $default
+     * @return mixed
+     */
+    public function get($item = null, $default = null)
+    {
+        if (is_null($item)) {
+            return $default;
+        }
 
-		$decoded = $this->getDecodedJson();
+        $decoded = $this->getDecodedJson();
 
-		if (array_key_exists($item, $decoded)) {
-			return $decoded[$item];
-		}
+        if (array_key_exists($item, $decoded)) {
+            return $decoded[$item];
+        }
 
-		foreach (explode('.', $item) as $segment) {
-			if (! is_array($decoded) || ! array_key_exists($segment, $decoded)) {
-				return $default;
-			}
+        foreach (explode('.', $item) as $segment) {
+            if (! is_array($decoded) || ! array_key_exists($segment, $decoded)) {
+                return $default;
+            }
 
-			$decoded = $decoded[$segment];
-		}
+            $decoded = $decoded[$segment];
+        }
 
-		return $decoded;
-	}
+        return $decoded;
+    }
 
-	/**
-	 * @return bool
-	 */
-	public function successful()
-	{
-		return preg_match('/^2[\d]{2,}/', $this->getHttpResponse()->getStatusCode());
-	}
+    /**
+     * @return bool
+     */
+    public function successful()
+    {
+        return preg_match('/^2[\d]{2,}/', $this->getHttpResponse()->getStatusCode());
+    }
 
-	/**
-	 * @return array
-	 */
-	private function getDecodedJson()
-	{
-		if (!is_null($this->decoded)) {
-		    return $this->decoded;
+    /**
+     * @return array
+     */
+    private function getDecodedJson()
+    {
+        if (!is_null($this->decoded)) {
+            return $this->decoded;
         }
 
         try {
@@ -85,5 +86,5 @@ class JsonResponse implements ResponseInterface
         } catch (\InvalidArgumentException $e) {
             return $this->decoded = array();
         }
-	}
+    }
 }

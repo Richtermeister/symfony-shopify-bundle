@@ -2,13 +2,11 @@
 
 namespace CodeCloud\Bundle\ShopifyBundle\Event;
 
-use CodeCloud\Bundle\ShopifyBundle\Api\GenericResource;
-use CodeCloud\Bundle\ShopifyBundle\Model\ShopifyStoreInterface;
 use Symfony\Component\EventDispatcher\Event;
 
 class WebhookEvent extends Event
 {
-    const NAME = 'codecloud_shopify_webhook';
+    const NAME = 'codecloud_shopify.webhook';
 
     /**
      * @var string
@@ -16,21 +14,21 @@ class WebhookEvent extends Event
     private $topic;
 
     /**
-     * @var ShopifyStoreInterface
+     * @var string
      */
     private $store;
 
     /**
-     * @var GenericResource
+     * @var array
      */
     private $resource;
 
     /**
      * @param string $topic
-     * @param ShopifyStoreInterface $store
-     * @param GenericResource $resource
+     * @param string $store
+     * @param array $resource
      */
-    public function __construct($topic, ShopifyStoreInterface $store, GenericResource $resource)
+    public function __construct(string $topic, string $store, array $resource)
     {
         $this->topic = $topic;
         $this->store = $store;
@@ -46,17 +44,17 @@ class WebhookEvent extends Event
     }
 
     /**
-     * @return ShopifyStoreInterface
+     * @return string
      */
-    public function getStore(): ShopifyStoreInterface
+    public function getStore(): string
     {
         return $this->store;
     }
 
     /**
-     * @return GenericResource
+     * @return array
      */
-    public function getResource(): GenericResource
+    public function getResource(): array
     {
         return $this->resource;
     }

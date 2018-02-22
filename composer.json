@@ -1,9 +1,9 @@
 {
-  "name": "codecloud/symfony-shopify-bundle",
+  "name": "cordoval/symfony-shopify-bundle",
   "type": "library",
   "description": "Makes Shopify app development a breeze",
   "keywords": ["shopify", "symfony"],
-  "homepage": "https://github.com/codecloud/symfony-shopify-bundle",
+  "homepage": "https://github.com/cordoval/symfony-shopify-bundle",
   "license": "MIT",
   "authors": [
     {
@@ -14,7 +14,9 @@
     }
   ],
   "require": {
-    "php": ">=5.3.0"
+    "php": ">=7.0.0",
+    "symfony/framework-bundle": "^3.0",
+    "guzzlehttp/guzzle": "^6.3"
   },
   "autoload": {
     "psr-4": {
