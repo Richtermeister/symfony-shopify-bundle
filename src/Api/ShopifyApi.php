@@ -1,4 +1,5 @@
 <?php
+
 namespace CodeCloud\Bundle\ShopifyBundle\Api;
 
 use CodeCloud\Bundle\ShopifyBundle\Api\Endpoint\AbstractEndpoint;

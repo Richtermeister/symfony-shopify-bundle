@@ -1,4 +1,5 @@
 <?php
+
 namespace CodeCloud\Bundle\ShopifyBundle\Api\Request;
 
 use GuzzleHttp\Psr7\Request;

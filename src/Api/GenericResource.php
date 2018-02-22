@@ -1,4 +1,5 @@
 <?php
+
 namespace CodeCloud\Bundle\ShopifyBundle\Api;
 
 class GenericResource implements \ArrayAccess
