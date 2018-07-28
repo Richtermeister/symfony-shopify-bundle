@@ -44,6 +44,9 @@ class WebhookCreator implements WebhookCreatorInterface
                 'topic' => $topic,
             ], UrlGeneratorInterface::ABSOLUTE_URL);
 
+            // endpoint HAS to be https
+            $endpoint = str_replace("http://", "https://", $endpoint);
+
             $webhook = GenericResource::create([
                 'topic' => $topic,
                 'address' => $endpoint,
