@@ -1,7 +1,7 @@
 <?php
 namespace CodeCloud\Bundle\ShopifyBundle\Api\Endpoint;
 
-use CodeCloud\Bundle\ShopifyBundle\Api\Request\GetParams;
+use CodeCloud\Bundle\ShopifyBundle\Api\Request\GetJson;
 use CodeCloud\Bundle\ShopifyBundle\Api\Request\PostJson;
 use CodeCloud\Bundle\ShopifyBundle\Api\GenericResource;
 
@@ -13,7 +13,7 @@ class ApplicationChargeEndpoint extends AbstractEndpoint
      */
     public function findAll(array $query = array())
     {
-        $request = new GetParams('/admin/application_charges.json', $query);
+        $request = new GetJson('/admin/application_charges.json', $query);
         $response = $this->send($request);
         return $this->createCollection($response->get('application_charges'));
     }
@@ -24,7 +24,7 @@ class ApplicationChargeEndpoint extends AbstractEndpoint
      */
     public function findOne($applicationChargeId)
     {
-        $request = new GetParams('/admin/application_charges/' . $applicationChargeId . '.json');
+        $request = new GetJson('/admin/application_charges/' . $applicationChargeId . '.json');
         $response = $this->send($request);
         return $this->createEntity($response->get('application_charge'));
     }
