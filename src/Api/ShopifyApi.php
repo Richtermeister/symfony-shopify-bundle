@@ -2,6 +2,7 @@
 namespace CodeCloud\Bundle\ShopifyBundle\Api;
 
 use CodeCloud\Bundle\ShopifyBundle\Api\Endpoint\AbstractEndpoint;
+use CodeCloud\Bundle\ShopifyBundle\Api\Endpoint\ApplicationChargeEndpoint;
 use CodeCloud\Bundle\ShopifyBundle\Api\Endpoint\ArticleEndpoint;
 use CodeCloud\Bundle\ShopifyBundle\Api\Endpoint\AssetEndpoint;
 use CodeCloud\Bundle\ShopifyBundle\Api\Endpoint\BlogEndpoint;
@@ -42,6 +43,7 @@ use GuzzleHttp\ClientInterface;
 /**
  * Main access point to Shopify Api.
  *
+ * @property ApplicationChargeEndpoint ApplicationCharge
  * @property ArticleEndpoint Article
  * @property AssetEndpoint Asset
  * @property BlogEndpoint Blog
@@ -89,6 +91,7 @@ class ShopifyApi
      * @var string[]
      */
     private $endpointClasses = [
+        'ApplicationCharge' => ApplicationChargeEndpoint::class,
         'Article' => ArticleEndpoint::class,
         'Asset' => AssetEndpoint::class,
         'Blog' => BlogEndpoint::class,
