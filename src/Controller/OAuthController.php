@@ -131,9 +131,10 @@ class OAuthController
         $hmac      = $request->get('hmac');
 
         // todo validate store name
+        // todo leverage options resolver?
 
-        if (!$authCode || !$storeName) {
-            throw new BadRequestHttpException('Request is missing required parameters: "code", "shop".');
+        if (!$authCode || !$storeName || !$nonce || !$hmac) {
+            throw new BadRequestHttpException('Request is missing one or more of required parameters: "code", "shop", "state", "hmac".');
         }
 
         if (!$this->hmacSignature->isValid($hmac, $request->query->all())) {
@@ -151,6 +152,7 @@ class OAuthController
             ],
         ];
 
+        // todo this can fail - 400
         $response = $this->client->request('POST', 'https://' . $storeName . '/admin/oauth/access_token', $params);
         $responseJson = \GuzzleHttp\json_decode($response->getBody(), true);
 
