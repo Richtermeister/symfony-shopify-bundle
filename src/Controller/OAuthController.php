@@ -8,7 +8,6 @@ use CodeCloud\Bundle\ShopifyBundle\Exception\InsufficientScopeException;
 use CodeCloud\Bundle\ShopifyBundle\Model\ShopifyStoreManagerInterface;
 use CodeCloud\Bundle\ShopifyBundle\Security\HmacSignature;
 use GuzzleHttp\ClientInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,7 +20,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  *
  * @see https://help.shopify.com/api/getting-started/authentication/oauth
  */
-class OAuthController extends Controller
+class OAuthController
 {
     /**
      * @var UrlGeneratorInterface
@@ -171,6 +170,8 @@ class OAuthController extends Controller
             return $response;
         }
 
-        return $this->forward($this->config['redirect_route'], [], $request->query->all());
+        return new RedirectResponse(
+            $this->router->generate($this->config['redirect_route'])
+        );
     }
 }
