@@ -81,6 +81,12 @@ abstract class AbstractEndpoint
      */
     protected function createEntity($data)
     {
+        if (!is_array($data)) {
+            throw new \InvalidArgumentException(
+                sprintf('Expected array, got "%s"', var_export($data, true)
+            ));
+        }
+
         $entity = new GenericResource();
         $entity->hydrate($data);
 
