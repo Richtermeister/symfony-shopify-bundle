@@ -7,6 +7,7 @@ use CodeCloud\Bundle\ShopifyBundle\Model\ShopifyStoreManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class WebhookController
@@ -46,6 +47,11 @@ class WebhookController
 
         if (!$this->storeManager->storeExists($storeName)) {
             throw new NotFoundHttpException();
+        }
+
+        if (empty($request->getContent())) {
+            // todo log!
+            throw new BadRequestHttpException('Webhook must have body content');
         }
 
         $payload = \GuzzleHttp\json_decode($request->getContent(), true);

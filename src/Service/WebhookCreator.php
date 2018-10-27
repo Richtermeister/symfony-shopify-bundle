@@ -4,6 +4,7 @@ namespace CodeCloud\Bundle\ShopifyBundle\Service;
 
 use CodeCloud\Bundle\ShopifyBundle\Api\GenericResource;
 use CodeCloud\Bundle\ShopifyBundle\Api\ShopifyApiFactory;
+use GuzzleHttp\Exception\ClientException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
@@ -53,7 +54,15 @@ class WebhookCreator implements WebhookCreatorInterface
                 'format' => 'json',
             ]);
 
-            $api->Webhook->create($webhook);
+            try {
+                $api->Webhook->create($webhook);
+            } catch (ClientException $e) {
+                if ($e->getResponse()->getStatusCode() == 422) {
+                    continue;
+                }
+
+                throw $e;
+            }
         }
     }
 
