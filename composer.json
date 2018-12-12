@@ -15,7 +15,7 @@
   ],
   "require": {
     "php": ">=7.0.0",
-    "symfony/framework-bundle": "^3.0",
+    "symfony/framework-bundle": "^3.0|^4.0",
     "guzzlehttp/guzzle": "^6.3"
   },
   "autoload": {
