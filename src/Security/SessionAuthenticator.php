@@ -31,7 +31,7 @@ class SessionAuthenticator extends AbstractGuardAuthenticator
         $this->urlGenerator = $urlGenerator;
     }
 
-    public function getCredentials(Request $request)
+    public function supports(Request $request)
     {
         if (!$session = $request->getSession()) {
             return false;
@@ -41,8 +41,13 @@ class SessionAuthenticator extends AbstractGuardAuthenticator
             return false;
         }
 
+        return true;
+    }
+
+    public function getCredentials(Request $request)
+    {
         return [
-            'shop' => $session->get(SessionAuthenticationListener::SESSION_PARAMETER),
+            'shop' => $request->getSession()->get(SessionAuthenticationListener::SESSION_PARAMETER),
         ];
     }
 

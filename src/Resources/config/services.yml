@@ -5,6 +5,7 @@ services:
 
   codecloud_shopify.controller.oauth:
       class: CodeCloud\Bundle\ShopifyBundle\Controller\OAuthController
+      public: true
       arguments:
           - "@router"
           - "%codecloud_shopify.oauth%"
