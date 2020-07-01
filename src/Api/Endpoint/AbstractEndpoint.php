@@ -19,11 +19,18 @@ abstract class AbstractEndpoint
     private $client;
 
     /**
-     * @param ClientInterface $client
+     * @var string
      */
-    public function __construct(ClientInterface $client)
+    private $apiVersion;
+
+    /**
+     * @param ClientInterface $client
+     * @param string $apiVersion
+     */
+    public function __construct(ClientInterface $client, $apiVersion = null)
     {
         $this->client = $client;
+        $this->apiVersion = $apiVersion;
     }
 
     /**
@@ -33,6 +40,7 @@ abstract class AbstractEndpoint
      */
     protected function send(RequestInterface $request)
     {
+        $request = $this->applyApiVersion($request);
         $response = $this->process($request);
 
         if (! $response->successful()) {
@@ -50,7 +58,10 @@ abstract class AbstractEndpoint
      */
     protected function sendPaged(RequestInterface $request, $rootElement)
     {
-        return $this->processPaged($request, $rootElement);
+        return $this->apiVersion
+            ? $this->processCursor($request, $rootElement)
+            : $this->processPaged($request, $rootElement)
+        ;
     }
 
     /**
@@ -116,6 +127,17 @@ abstract class AbstractEndpoint
         return $response;
     }
 
+    private function applyApiVersion(RequestInterface $request)
+    {
+        if (!$this->apiVersion) {
+            return $request;
+        }
+
+        $uri = $request->getUri();
+        $uri = $uri->withPath(str_replace("/admin/", "/admin/api/".$this->apiVersion."/", $uri->getPath()));
+        return $request->withUri($uri);
+    }
+
     /**
      * Loop through a set of API results that are available in pages, returning the full resultset as one array
      * @param RequestInterface $request
@@ -125,6 +147,8 @@ abstract class AbstractEndpoint
      */
     protected function processPaged(RequestInterface $request, $rootElement, array $params = array())
     {
+        $request = $this->applyApiVersion($request);
+
         if (empty($params['page'])) {
             $params['page'] = 1;
         }
@@ -154,4 +178,75 @@ abstract class AbstractEndpoint
 
         return $allResults;
     }
+
+    /**
+     * Loop through a set of API results that are available in pages, returning the full resultset as one array
+     * @param RequestInterface $request
+     * @param string $rootElement
+     * @return array
+     */
+    protected function processCursor(RequestInterface $request, $rootElement)
+    {
+        $request = $this->applyApiVersion($request);
+
+        $allResults = array();
+
+        do {
+            $response = $this->process($request);
+
+            $root = $response->get($rootElement);
+
+            if (!empty($root)) {
+                $allResults = array_merge($allResults, $root);
+            }
+
+            $linkHeader = $response->getHttpResponse()->getHeaderLine('Link');
+            if (empty($linkHeader)) {
+                return $allResults;
+            }
+
+            $links = extractLinks($linkHeader);
+            if (empty($links['next'])) {
+                return $allResults;
+            }
+
+            $request = $request->withUri(new Uri($links['next']));
+        } while (true);
+
+        return $allResults;
+    }
+}
+
+// lovingly borrowed from: https://community.shopify.com/c/Shopify-APIs-SDKs/How-to-parse-Link-data-from-header-data-in-PHP/td-p/569537#
+function extractLinks($linkHeader) {
+    $cleanArray = [];
+
+    if (strpos($linkHeader, ',') !== false) {
+        //Split into two or more elements by comma
+        $linkHeaderArr = explode(',', $linkHeader);
+    } else {
+        //Create array with one element
+        $linkHeaderArr[] = $linkHeader;
+    }
+
+    foreach ($linkHeaderArr as $linkHeader) {
+        $cleanArray += [
+            extractRel($linkHeader) => extractLink($linkHeader)
+        ];
+    }
+    return $cleanArray;
+}
+
+function extractLink($element) {
+    if (preg_match('/<(.*?)>/', $element, $match) == 1) {
+        return $match[1];
+    }
+    return null;
+}
+
+function extractRel($element) {
+    if (preg_match('/rel="(.*?)"/', $element, $match) == 1) {
+        return $match[1];
+    }
+    return null;
 }

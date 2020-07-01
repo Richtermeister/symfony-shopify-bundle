@@ -31,6 +31,8 @@ class Configuration implements ConfigurationInterface
                 ->prototype('scalar')->end()
                 ->defaultValue([])
             ->end()
+            ->scalarNode('api_version')
+            ->end()
             ->scalarNode('dev_impersonate_store')
             ->end()
         ->end();

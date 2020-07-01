@@ -21,6 +21,7 @@ class CodeCloudShopifyExtension extends Extension
         $container->setParameter('codecloud_shopify', $config);
         $container->setParameter('codecloud_shopify.oauth', $config['oauth']);
         $container->setParameter('codecloud_shopify.webhooks', $config['webhooks']);
+        $container->setParameter('codecloud_shopify.api_version', $config['api_version']);
 
         foreach ($config['oauth'] as $key => $value) {
             $container->setParameter('codecloud_shopify.oauth.'.$key, $value);
