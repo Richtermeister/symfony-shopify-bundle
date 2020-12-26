@@ -13,12 +13,11 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
+        $treeBuilder = new TreeBuilder('code_cloud_shopify');
 
-        $rootNode = $treeBuilder->root('code_cloud_shopify');
+        $rootNode = $treeBuilder->getRootNode();
 
         $rootNode->children()
-            ->scalarNode('store_manager_id')->isRequired()->cannotBeEmpty()->end()
             ->arrayNode('oauth')->isRequired()
                 ->children()
                     ->scalarNode('api_key')->isRequired()->cannotBeEmpty()->end()
@@ -31,7 +30,7 @@ class Configuration implements ConfigurationInterface
                 ->prototype('scalar')->end()
                 ->defaultValue([])
             ->end()
-            ->scalarNode('api_version')
+            ->scalarNode('api_version')->defaultNull()
             ->end()
             ->scalarNode('dev_impersonate_store')
             ->end()
