@@ -97,10 +97,7 @@ class OAuthController
             throw new BadRequestHttpException('Request is missing required parameter "shop".');
         }
 
-        if ($response = $this->dispatcher->dispatch(
-            PreAuthEvent::NAME,
-            new PreAuthEvent($storeName))->getResponse()
-        ) {
+        if ($response = $this->dispatcher->dispatch(new PreAuthEvent($storeName))->getResponse()) {
             return $response;
         }
 
@@ -173,10 +170,7 @@ class OAuthController
         $accessToken = $responseJson['access_token'];
         $this->stores->authenticateStore($storeName, $accessToken, $nonce);
 
-        if ($response = $this->dispatcher->dispatch(
-            PostAuthEvent::NAME,
-            new PostAuthEvent($storeName, $accessToken))->getResponse()
-        ) {
+        if ($response = $this->dispatcher->dispatch(new PostAuthEvent($storeName, $accessToken))->getResponse()) {
             return $response;
         }
 

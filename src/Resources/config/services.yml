@@ -6,12 +6,13 @@ services:
   CodeCloud\Bundle\ShopifyBundle\:
     resource: '../../*'
     exclude: '../../{DependencyInjection,Tests,*.Bundle.php}'
-    
+
   CodeCloud\Bundle\ShopifyBundle\Controller\:
     resource: '../../Controller/'
     tags: ['controller.service_arguments']
 
   CodeCloud\Bundle\ShopifyBundle\Controller\OAuthController:
+    public: true
     arguments:
       $config: "%codecloud_shopify.oauth%"
 
