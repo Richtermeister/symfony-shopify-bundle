@@ -11,6 +11,7 @@ use GuzzleHttp\ClientInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -98,23 +99,24 @@ class OAuthController
             return $response;
         }
 
-        $verifyUrl = $this->router->generate('codecloud_shopify_verify', [], UrlGeneratorInterface::ABSOLUTE_URL);
-        $verifyUrl = str_replace("http://", "https://", $verifyUrl);
+        // see: https://stackoverflow.com/a/37881509
+        $verifyUrl = 'https:'.$this->router->generate('codecloud_shopify_verify', [], UrlGeneratorInterface::NETWORK_PATH);
         $nonce = uniqid();
 
         $this->stores->preAuthenticateStore($storeName, $nonce);
 
-        $params = [
+        $url = sprintf('https://%s/admin/oauth/authorize?', $storeName).http_build_query([
             'client_id'    => $this->config['api_key'],
             'scope'        => $this->config['scope'],
             'redirect_uri' => $verifyUrl,
             'state'        => $nonce,
-        ];
+        ]);
 
-        $shopifyEndpoint = 'https://%s/admin/oauth/authorize?%s';
-        $url = sprintf($shopifyEndpoint, $storeName, http_build_query($params));
-
-        return new RedirectResponse($url);
+        // this route may be loaded inside an iFrame, it is important to execute the redirect on the top frame
+        return new Response('<script>
+    window.top.location.href = "'.$url.'";
+</script>
+', Response::HTTP_OK, ['Content-Type', 'text/html']);
     }
 
     /**
