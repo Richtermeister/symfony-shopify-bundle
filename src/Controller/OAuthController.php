@@ -7,19 +7,22 @@ use CodeCloud\Bundle\ShopifyBundle\Event\PreAuthEvent;
 use CodeCloud\Bundle\ShopifyBundle\Exception\InsufficientScopeException;
 use CodeCloud\Bundle\ShopifyBundle\Model\ShopifyStoreManagerInterface;
 use CodeCloud\Bundle\ShopifyBundle\Security\HmacSignature;
-use GuzzleHttp\ClientInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * Handles the OAuth handshake with Shopify.
  *
  * @see https://help.shopify.com/api/getting-started/authentication/oauth
+ *
+ * @Route("/shopify")
  */
 class OAuthController
 {
@@ -34,7 +37,7 @@ class OAuthController
     private $config;
 
     /**
-     * @var ClientInterface
+     * @var HttpClientInterface
      */
     private $client;
 
@@ -56,7 +59,7 @@ class OAuthController
     /**
      * @param UrlGeneratorInterface $router
      * @param array $config
-     * @param ClientInterface $client
+     * @param HttpClientInterface $client
      * @param ShopifyStoreManagerInterface $stores
      * @param EventDispatcherInterface $dispatcher
      * @param HmacSignature $hmacSignature
@@ -64,7 +67,7 @@ class OAuthController
     public function __construct(
         UrlGeneratorInterface $router,
         array $config,
-        ClientInterface $client,
+        HttpClientInterface $client,
         ShopifyStoreManagerInterface $stores,
         EventDispatcherInterface $dispatcher,
         HmacSignature $hmacSignature
@@ -85,6 +88,8 @@ class OAuthController
      *
      * @param Request $request
      * @return RedirectResponse
+     *
+     * @Route("/auth", name="codecloud_shopify_auth")
      */
     public function auth(Request $request)
     {
@@ -124,6 +129,8 @@ class OAuthController
      *
      * @param Request $request
      * @return string
+     *
+     * @Route("/verify", name="codecloud_shopify_verify")
      */
     public function verify(Request $request)
     {
@@ -157,7 +164,7 @@ class OAuthController
 
         // todo this can fail - 400
         $response = $this->client->request('POST', 'https://' . $storeName . '/admin/oauth/access_token', $params);
-        $responseJson = \GuzzleHttp\json_decode($response->getBody(), true);
+        $responseJson = \GuzzleHttp\json_decode($response->getContent(), true);
 
         if ($responseJson['scope'] != $this->config['scope']) {
             throw new InsufficientScopeException($this->config['scope'], $responseJson['scope']);
