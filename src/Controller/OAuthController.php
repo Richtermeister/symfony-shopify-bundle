@@ -148,20 +148,16 @@ class OAuthController
         }
 
         $params = [
-            'body' => \GuzzleHttp\json_encode([
+            'json' => [
                 'client_id'     => $this->config['api_key'],
                 'client_secret' => $this->config['shared_secret'],
                 'code'          => $authCode
-            ]),
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
             ],
         ];
 
         // todo this can fail - 400
         $response = $this->client->request('POST', 'https://' . $storeName . '/admin/oauth/access_token', $params);
-        $responseJson = \GuzzleHttp\json_decode($response->getContent(), true);
+        $responseJson = json_decode($response->getContent(), true);
 
         if ($responseJson['scope'] != $this->config['scope']) {
             throw new InsufficientScopeException($this->config['scope'], $responseJson['scope']);
