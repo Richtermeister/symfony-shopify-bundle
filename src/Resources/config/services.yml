@@ -29,3 +29,7 @@ services:
   CodeCloud\Bundle\ShopifyBundle\Security\HmacSignature:
     arguments:
       $sharedSecret: "%codecloud_shopify.oauth.shared_secret%"
+
+  CodeCloud\Bundle\ShopifyBundle\Service\WebhookCreatorEventBridge:
+    arguments:
+      $eventBridgeArn: '%codecloud_shopify.event_bride_source_arn%'

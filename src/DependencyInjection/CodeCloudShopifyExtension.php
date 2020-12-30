@@ -2,6 +2,8 @@
 namespace CodeCloud\Bundle\ShopifyBundle\DependencyInjection;
 
 use CodeCloud\Bundle\ShopifyBundle\Security\DevAuthenticator;
+use CodeCloud\Bundle\ShopifyBundle\Service\WebhookCreatorEventBridge;
+use CodeCloud\Bundle\ShopifyBundle\Service\WebhookCreatorInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -21,6 +23,7 @@ class CodeCloudShopifyExtension extends Extension
         $container->setParameter('codecloud_shopify', $config);
         $container->setParameter('codecloud_shopify.oauth', $config['oauth']);
         $container->setParameter('codecloud_shopify.webhooks', $config['webhooks']);
+        $container->setParameter('codecloud_shopify.event_bride_source_arn', $config['event_bride_source_arn']);
         $container->setParameter('codecloud_shopify.api_version', $config['api_version']);
 
         foreach ($config['oauth'] as $key => $value) {
@@ -36,6 +39,12 @@ class CodeCloudShopifyExtension extends Extension
                 [$config['dev_impersonate_store']]
             );
             $container->setDefinition('codecloud_shopify.security.session_authenticator', $definition);
+        }
+
+        if (!empty($config['event_bride_source_arn'])) {
+            $container->setAlias(WebhookCreatorInterface::class, WebhookCreatorEventBridge::class);
+        } else {
+            $container->setAlias(WebhookCreatorInterface::class, WebhookCreator::class);
         }
     }
 }

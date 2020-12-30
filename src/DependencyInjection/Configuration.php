@@ -30,10 +30,9 @@ class Configuration implements ConfigurationInterface
                 ->prototype('scalar')->end()
                 ->defaultValue([])
             ->end()
-            ->scalarNode('api_version')->defaultNull()
-            ->end()
-            ->scalarNode('dev_impersonate_store')
-            ->end()
+            ->scalarNode('event_bride_source_arn')->defaultNull()->end()
+            ->scalarNode('api_version')->defaultNull()->end()
+            ->scalarNode('dev_impersonate_store')->end()
         ->end();
 
         return $treeBuilder;
