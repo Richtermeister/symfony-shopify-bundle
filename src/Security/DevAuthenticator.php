@@ -24,6 +24,11 @@ class DevAuthenticator extends AbstractGuardAuthenticator
         $this->storeName = $storeName;
     }
 
+    public function supports(Request $request)
+    {
+        return true;
+    }
+
     public function getCredentials(Request $request)
     {
         return [
