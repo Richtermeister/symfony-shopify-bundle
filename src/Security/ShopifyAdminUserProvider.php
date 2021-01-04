@@ -16,9 +16,6 @@ class ShopifyAdminUserProvider implements UserProviderInterface
      */
     private $storeManager;
 
-    /**
-     * @param ShopifyStoreManagerInterface $storeManager
-     */
     public function __construct(ShopifyStoreManagerInterface $storeManager)
     {
         $this->storeManager = $storeManager;
@@ -40,6 +37,6 @@ class ShopifyAdminUserProvider implements UserProviderInterface
 
     public function supportsClass($class)
     {
-        return $class instanceof ShopifyAdminUser;
+        return is_a($class, ShopifyAdminUser::class, true);
     }
 }
