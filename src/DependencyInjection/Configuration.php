@@ -1,4 +1,5 @@
 <?php
+
 namespace CodeCloud\Bundle\ShopifyBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
@@ -30,9 +31,10 @@ class Configuration implements ConfigurationInterface
                 ->prototype('scalar')->end()
                 ->defaultValue([])
             ->end()
-            ->scalarNode('event_bride_source_arn')->defaultNull()->end()
+            ->scalarNode('webhook_url')->defaultNull()->end()
             ->scalarNode('api_version')->defaultNull()->end()
             ->scalarNode('dev_impersonate_store')->end()
+            ->scalarNode('dev_impersonate_firewall')->defaultValue('main')->end()
         ->end();
 
         return $treeBuilder;

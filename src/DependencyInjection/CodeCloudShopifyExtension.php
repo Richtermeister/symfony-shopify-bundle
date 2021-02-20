@@ -2,8 +2,12 @@
 namespace CodeCloud\Bundle\ShopifyBundle\DependencyInjection;
 
 use CodeCloud\Bundle\ShopifyBundle\Security\DevAuthenticator;
-use CodeCloud\Bundle\ShopifyBundle\Service\WebhookCreatorEventBridge;
+use CodeCloud\Bundle\ShopifyBundle\Security\DevEntryPoint;
+use CodeCloud\Bundle\ShopifyBundle\Security\EntryPoint;
+use CodeCloud\Bundle\ShopifyBundle\Service\WebhookCreator;
 use CodeCloud\Bundle\ShopifyBundle\Service\WebhookCreatorInterface;
+use CodeCloud\Bundle\ShopifyBundle\Service\WebhookCreatorLocal;
+use CodeCloud\Bundle\ShopifyBundle\Service\WebhookCreatorRemote;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -23,7 +27,7 @@ class CodeCloudShopifyExtension extends Extension
         $container->setParameter('codecloud_shopify', $config);
         $container->setParameter('codecloud_shopify.oauth', $config['oauth']);
         $container->setParameter('codecloud_shopify.webhooks', $config['webhooks']);
-        $container->setParameter('codecloud_shopify.event_bride_source_arn', $config['event_bride_source_arn']);
+        $container->setParameter('codecloud_shopify.webhook_url', $config['webhook_url']);
         $container->setParameter('codecloud_shopify.api_version', $config['api_version']);
 
         foreach ($config['oauth'] as $key => $value) {
@@ -35,16 +39,18 @@ class CodeCloudShopifyExtension extends Extension
 
         if (!empty($config['dev_impersonate_store'])) {
             $definition = new Definition(
-                DevAuthenticator::class,
-                [$config['dev_impersonate_store']]
+                DevEntryPoint::class,
             );
-            $container->setDefinition('codecloud_shopify.security.session_authenticator', $definition);
+            $definition->setArgument('$storeName', $config['dev_impersonate_store']);
+            $definition->setArgument('$firewallName', $config['dev_impersonate_firewall']);
+            $definition->setAutowired(true);
+            $container->setDefinition(EntryPoint::class, $definition);
         }
 
-        if (!empty($config['event_bride_source_arn'])) {
-            $container->setAlias(WebhookCreatorInterface::class, WebhookCreatorEventBridge::class);
+        if (!empty($config['webhook_url'])) {
+            $container->setAlias(WebhookCreatorInterface::class, WebhookCreatorRemote::class);
         } else {
-            $container->setAlias(WebhookCreatorInterface::class, WebhookCreator::class);
+            $container->setAlias(WebhookCreatorInterface::class, WebhookCreatorLocal::class);
         }
     }
 }

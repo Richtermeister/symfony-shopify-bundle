@@ -30,6 +30,6 @@ services:
     arguments:
       $sharedSecret: "%codecloud_shopify.oauth.shared_secret%"
 
-  CodeCloud\Bundle\ShopifyBundle\Service\WebhookCreatorEventBridge:
+  CodeCloud\Bundle\ShopifyBundle\Service\WebhookCreatorRemote:
     arguments:
-      $eventBridgeArn: '%codecloud_shopify.event_bride_source_arn%'
+      $webhookUrl: '%codecloud_shopify.webhook_url%'
