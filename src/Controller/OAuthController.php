@@ -5,6 +5,7 @@ namespace CodeCloud\Bundle\ShopifyBundle\Controller;
 use CodeCloud\Bundle\ShopifyBundle\Event\PostAuthEvent;
 use CodeCloud\Bundle\ShopifyBundle\Event\PreAuthEvent;
 use CodeCloud\Bundle\ShopifyBundle\Exception\InsufficientScopeException;
+use CodeCloud\Bundle\ShopifyBundle\Http\FrameBusterRedirectResponse;
 use CodeCloud\Bundle\ShopifyBundle\Model\ShopifyStoreManagerInterface;
 use CodeCloud\Bundle\ShopifyBundle\Security\HmacSignature;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -114,11 +115,7 @@ class OAuthController
             'state'        => $nonce,
         ]);
 
-        // this route may be loaded inside an iFrame, it is important to execute the redirect on the top frame
-        return new Response('<script>
-    window.top.location.href = "'.$url.'";
-</script>
-', Response::HTTP_OK, ['Content-Type', 'text/html']);
+        return new FrameBusterRedirectResponse($url);
     }
 
     /**
