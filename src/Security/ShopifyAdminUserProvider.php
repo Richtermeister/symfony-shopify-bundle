@@ -21,13 +21,15 @@ class ShopifyAdminUserProvider implements UserProviderInterface
         $this->storeManager = $storeManager;
     }
 
-    public function loadUserByUsername($username)
+    public function loadUserByUsername($sessionId)
     {
-        if (!$this->storeManager->storeExists($username)) {
+        $storeName = $this->storeManager->findStoreNameBySession($sessionId);
+
+        if (!$storeName) {
             throw new UsernameNotFoundException();
         }
 
-        return new ShopifyAdminUser($username, [self::ROLE_SHOPIFY_ADMIN]);
+        return new ShopifyAdminUser($storeName, [self::ROLE_SHOPIFY_ADMIN]);
     }
 
     public function refreshUser(UserInterface $user)

@@ -171,7 +171,9 @@ class OAuthController
         }
 
         return new RedirectResponse(
-            $this->router->generate($this->config['redirect_route'])
+            $this->router->generate('codecloud_shopify_jwt', [
+                'shop' => $storeName,
+            ])
         );
     }
 }

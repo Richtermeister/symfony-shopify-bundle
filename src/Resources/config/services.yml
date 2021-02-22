@@ -16,6 +16,11 @@ services:
     arguments:
       $config: "%codecloud_shopify.oauth%"
 
+  CodeCloud\Bundle\ShopifyBundle\Controller\JwtController:
+    public: true
+    arguments:
+      $redirectRoute: "%codecloud_shopify.oauth.redirect_route%"
+
   CodeCloud\Bundle\ShopifyBundle\Command\WebhooksCommand:
     arguments:
       $topics: "%codecloud_shopify.webhooks%"
@@ -33,3 +38,8 @@ services:
   CodeCloud\Bundle\ShopifyBundle\Service\WebhookCreatorRemote:
     arguments:
       $webhookUrl: '%codecloud_shopify.webhook_url%'
+
+  CodeCloud\Bundle\ShopifyBundle\Service\JwtResolver:
+    arguments:
+      - '%codecloud_shopify.oauth.api_key%'
+      - '%codecloud_shopify.oauth.shared_secret%'
