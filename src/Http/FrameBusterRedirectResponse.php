@@ -8,7 +8,7 @@ class FrameBusterRedirectResponse extends Response
 {
     public function __construct(string $url)
     {
-        $this->__construct('<script>
+        parent::__construct('<script>
     window.top.location.href = "'.$url.'";
 </script>
 ', Response::HTTP_OK, ['Content-Type', 'text/html']);
