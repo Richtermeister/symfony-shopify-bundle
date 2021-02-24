@@ -4,6 +4,7 @@ namespace CodeCloud\Bundle\ShopifyBundle\DependencyInjection;
 use CodeCloud\Bundle\ShopifyBundle\Security\DevAuthenticator;
 use CodeCloud\Bundle\ShopifyBundle\Security\DevEntryPoint;
 use CodeCloud\Bundle\ShopifyBundle\Security\EntryPoint;
+use CodeCloud\Bundle\ShopifyBundle\Security\ShopifyAdminUserProvider;
 use CodeCloud\Bundle\ShopifyBundle\Service\WebhookCreator;
 use CodeCloud\Bundle\ShopifyBundle\Service\WebhookCreatorInterface;
 use CodeCloud\Bundle\ShopifyBundle\Service\WebhookCreatorLocal;
@@ -38,13 +39,10 @@ class CodeCloudShopifyExtension extends Extension
         $loader->load('services.yml');
 
         if (!empty($config['dev_impersonate_store'])) {
-            $definition = new Definition(
-                DevEntryPoint::class,
-            );
-            $definition->setArgument('$storeName', $config['dev_impersonate_store']);
-            $definition->setArgument('$firewallName', $config['dev_impersonate_firewall']);
-            $definition->setAutowired(true);
-            $container->setDefinition(EntryPoint::class, $definition);
+            $def = $container->getDefinition(ShopifyAdminUserProvider::class);
+            $def->addMethodCall('setDevStore', [
+                $config['dev_impersonate_store']
+            ]);
         }
 
         if (!empty($config['webhook_url'])) {

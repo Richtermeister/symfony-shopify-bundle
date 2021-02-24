@@ -16,14 +16,24 @@ class ShopifyAdminUserProvider implements UserProviderInterface
      */
     private $storeManager;
 
+    /**
+     * @var string
+     */
+    private $devStore;
+
     public function __construct(ShopifyStoreManagerInterface $storeManager)
     {
         $this->storeManager = $storeManager;
     }
 
+    public function setDevStore(string $devStore)
+    {
+        $this->devStore = $devStore;
+    }
+
     public function loadUserByUsername($sessionId)
     {
-        $storeName = $this->storeManager->findStoreNameBySession($sessionId);
+        $storeName = $this->devStore ?? $this->storeManager->findStoreNameBySession($sessionId);
 
         if (!$storeName) {
             throw new UsernameNotFoundException();
