@@ -1,17 +1,14 @@
 <?php
+
 namespace CodeCloud\Bundle\ShopifyBundle\DependencyInjection;
 
-use CodeCloud\Bundle\ShopifyBundle\Security\DevAuthenticator;
-use CodeCloud\Bundle\ShopifyBundle\Security\DevEntryPoint;
-use CodeCloud\Bundle\ShopifyBundle\Security\EntryPoint;
+use CodeCloud\Bundle\ShopifyBundle\EventListener\InstallWebhooksListener;
 use CodeCloud\Bundle\ShopifyBundle\Security\ShopifyAdminUserProvider;
-use CodeCloud\Bundle\ShopifyBundle\Service\WebhookCreator;
 use CodeCloud\Bundle\ShopifyBundle\Service\WebhookCreatorInterface;
 use CodeCloud\Bundle\ShopifyBundle\Service\WebhookCreatorLocal;
 use CodeCloud\Bundle\ShopifyBundle\Service\WebhookCreatorRemote;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
@@ -49,6 +46,10 @@ class CodeCloudShopifyExtension extends Extension
             $container->setAlias(WebhookCreatorInterface::class, WebhookCreatorRemote::class);
         } else {
             $container->setAlias(WebhookCreatorInterface::class, WebhookCreatorLocal::class);
+        }
+
+        if (!empty($config['webhooks'])) {
+            $container->getDefinition(InstallWebhooksListener::class)->setArgument('$topics', $config['webhooks']);
         }
     }
 }

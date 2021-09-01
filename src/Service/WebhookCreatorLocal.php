@@ -4,7 +4,6 @@ namespace CodeCloud\Bundle\ShopifyBundle\Service;
 
 use CodeCloud\Bundle\ShopifyBundle\Api\GenericResource;
 use CodeCloud\Bundle\ShopifyBundle\Api\ShopifyApiFactory;
-use GuzzleHttp\Exception\ClientException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
@@ -35,7 +34,15 @@ class WebhookCreatorLocal extends AbstractWebhookCreator
     {
         $api = $this->apis->getForStore($storeName);
 
+        $existing = $api->Webhook->findAll();
+
         foreach ($topics as $topic) {
+            foreach ($existing as $ex) {
+                if ($ex['topic'] == $topic) {
+                    continue 2;
+                }
+            }
+
             $endpoint = $this->router->generate('codecloud_shopify_webhooks', [
                 'store' => $storeName,
                 'topic' => $topic,

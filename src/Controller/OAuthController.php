@@ -87,9 +87,6 @@ class OAuthController
     /**
      * Handles initial auth request from Shopify.
      *
-     * @param Request $request
-     * @return RedirectResponse
-     *
      * @Route("/auth", name="codecloud_shopify_auth")
      */
     public function auth(Request $request)
@@ -120,9 +117,6 @@ class OAuthController
 
     /**
      * Handles auth verification callback from Shopify.
-     *
-     * @param Request $request
-     * @return string
      *
      * @Route("/verify", name="codecloud_shopify_verify")
      */

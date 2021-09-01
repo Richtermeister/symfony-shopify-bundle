@@ -24,7 +24,7 @@ class WebhookLoggerListener implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            WebhookEvent::NAME => 'onWebhook',
+            WebhookEvent::class => 'onWebhook',
         ];
     }
 
