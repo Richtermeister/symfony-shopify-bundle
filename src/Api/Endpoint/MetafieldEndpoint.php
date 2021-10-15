@@ -33,6 +33,18 @@ class MetafieldEndpoint extends AbstractEndpoint
     }
 
     /**
+     * @param int $variantId
+     * @param array $query
+     * @return array|\CodeCloud\Bundle\ShopifyBundle\Api\GenericResource[]
+     */
+    public function findVariantMetafields($variantId, array $query = array())
+    {
+        $request = new GetJson('/admin/variants/' . $variantId . '/metafields.json', $query);
+        $response = $this->sendPaged($request, 'metafields');
+        return $this->createCollection($response);
+    }
+
+    /**
      * @param int $productImageId
      * @return array|\CodeCloud\Bundle\ShopifyBundle\Api\GenericResource[]
      */
