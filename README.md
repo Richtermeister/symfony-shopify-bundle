@@ -1,6 +1,6 @@
 # Symfony Shopify Bundle
 
-This bundle enables quick and easy integration with Shopify.
+This bundle enables quick and easy integration with Shopify. Your app can be installed as private or public, and is easily embeddable within the Shopify admin area.
 
 [![Build Status on Travis](https://img.shields.io/travis/Richtermeister/symfony-shopify-bundle/master.svg)](http://travis-ci.org/Richtermeister/symfony-shopify-bundle)
 [![Scrutinizer Quality Score](https://img.shields.io/scrutinizer/g/Richtermeister/symfony-shopify-bundle.svg)](https://scrutinizer-ci.com/g/Richtermeister/symfony-shopify-bundle/)
@@ -14,33 +14,31 @@ This bundle enables quick and easy integration with Shopify.
 
 ## The Store Model
 
-Stores are represented by instances of `ShopifyStoreInterface`. It is up to you to provide an implementation of it and handle persistence.
+Persistence is delegated to an implementation of `ShopifyStoreManagerInterface`. It is up to you to provide an implementation of it and handle persistence.
 
 ## OAUTH Configuration
 
-``` yml
-// app/confiy.yml
-
+```yaml
+# config/packages/code_cloud.yaml
 code_cloud_shopify:
-    store_manager_id: { id of your store manager service }
     oauth:
-        api_key: { your app's API Key }
-        shared_secret: { your app's shared secret } 
-        scope: { the scopes your app requires, i.e.: "read_customers,write_customers" }
-        redirect_route: { the route to redirect users to after installing the app, i.e.: "admin_dashboard".. }
+        api_key: # your app's API Key
+        shared_secret: # your app's shared secret  
+        scope: # the scopes your app requires, i.e.: "read_customers,write_customers" 
+        redirect_route: # the route to redirect users to after installing the app, i.e.: "admin_dashboard".. 
     webhooks:
         - orders/create
         - customers/update
+        - app/uninstalled
+    webhook_url: # (optional) a url where to direct Shopify webhooks
 ```
 
 ## API Usage
 
-You can access the API of an authorized store via the `` service:
+You can access the API of an authorized store via the `ShopifyApiFactory` service:
  
-``` php
-// in Controller
-
-$api = $this->get('')->getForStore("name-of-store");
+```php
+$api = $factory->getForStore("name-of-store");
 
 $customers = $api->Customer->findAll();
 $orders = $api->Order->findAll();
@@ -48,8 +46,10 @@ $orders = $api->Order->findAll();
 
 ## Webhooks
 
-You can register a list of webhooks you are interested in receiving. 
-The bundle will automatically register them with Shopify and dispatch an event every time a webhook is received.
+You can provide a list of webhooks you are interested in receiving, the bundle will automatically register them with Shopify.
+By default the webhooks will be pointed at your app and a `WebhookEvent` is dispatched for every hook received.
+If you provide a `webhook_url` you can point webhooks at a separate app, for example a Lambda.
+This is highly encouraged, since for a noisy store the volume of Shopify events can overwhelm a simple LAMP stack. 
 
 ```php
 <?php
@@ -83,34 +83,50 @@ class WebhookListener implements EventSubscriberInterface
 
 ```
 
+It is highly recommended to process webhooks via a queue to satisfy Shopify's response time requirements. 
+
 ## Security & Authentication
 
-By default, the bundle provides session-based authentication for admin areas embedded within Shopify.
+The bundle automatically resolves Shopify's JWT token to a session id. Since 3rd party cookies do not work (any more) within an iFrame, it is recommended to keep the session id in the url at all times.
+The bundle has a routing listener to make this `shopify_session_id` parameter sticky, but all your admin routes need to explicitly include it, like so:
+
+```php
+/**
+ * @Route("/admin/{shopify_session_id}")
+ */
+class AdminController extends AbstractController {}
+```
+
+Configure your `securiy.yaml`:
 
 ```yaml
 security:
     providers:
-        codecloud_shopify:
-            id: codecloud_shopify.security.admin_user_provider
+        code_cloud:
+            id: CodeCloud\Bundle\ShopifyBundle\Security\ShopifyAdminUserProvider
 
     firewalls:
         admin:
             pattern: ^/admin
-            provider: codecloud_shopify
+            provider: code_cloud
             guard:
                 authenticators:
-                    - codecloud_shopify.security.session_authenticator
+                    - CodeCloud\Bundle\ShopifyBundle\Security\SessionAuthenticator
+            stateless: true
+    access_control:
+        - { path: ^/admin, roles: ROLE_SHOPIFY_ADMIN }
+        - { path: ^/, roles: PUBLIC_ACCESS }
 ```
 
 Authenticated users will be an instance of `CodeCloud\Bundle\ShopifyBundle\Security\ShopifyAdminUser`,
 their username will be the name of the authenticated store (storename.myshopify.com), and their roles will include `ROLE_SHOPIFY_ADMIN`.
 
-For development purposes, you can impersonate any existing store.
+For development purposes, you can impersonate any existing store without having to authenticate via Shopify.
 
 ```yaml
-# in config_dev.yml
+# in config_dev.yaml
 code_cloud_shopify:
-    dev_impersonate_store: "{store-name}.myshopify.com"
+    dev_impersonate_store: "{your-store-name}.myshopify.com"
 ```
 
 ## Credits

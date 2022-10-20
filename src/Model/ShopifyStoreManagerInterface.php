@@ -8,13 +8,15 @@ namespace CodeCloud\Bundle\ShopifyBundle\Model;
 interface ShopifyStoreManagerInterface
 {
     /**
+     * Returns the Shopify access token associated with the store.
+     *
      * @param string $storeName
      * @return string
      */
     public function getAccessToken($storeName): string;
 
     /**
-     * Return whether the specified store exists.
+     * Return whether the specified store exists within your system.
      *
      * @param string $storeName
      * @return bool
@@ -45,4 +47,20 @@ interface ShopifyStoreManagerInterface
      * @param string $nonce
      */
     public function authenticateStore($storeName, $accessToken, $nonce);
+
+    /**
+     * This method is called when a user authenticates themselves. You need to store the session id associated with the store.
+     *
+     * @param Session $session
+     * @return mixed
+     */
+    public function authenticateSession(Session $session);
+
+    /**
+     * This method is called as part of authentication. It's the counterpart to `authenticateSession`.
+     *
+     * @param string $sessionId
+     * @return string|null
+     */
+    public function findStoreNameBySession(string $sessionId): ?string;
 }

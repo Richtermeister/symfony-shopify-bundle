@@ -1,6 +1,7 @@
 <?php
 namespace CodeCloud\Bundle\ShopifyBundle\Api\Endpoint;
 
+use CodeCloud\Bundle\ShopifyBundle\Api\GenericResource;
 use CodeCloud\Bundle\ShopifyBundle\Api\Request\GetJson;
 use CodeCloud\Bundle\ShopifyBundle\Api\Request\PostJson;
 
@@ -57,5 +58,20 @@ class TransactionEndpoint extends AbstractEndpoint
 
         $request = new PostJson('/admin/orders/' . $orderId . '/transactions.json', array('transaction' => $params));
         $this->send($request);
+    }
+
+    /**
+     * @param int $orderId
+     * @param GenericResource $transaction
+     * @return GenericEntity
+     */
+    public function create($orderId, GenericResource $transaction)
+    {
+        $request = new PostJson('/admin/orders/' . $orderId . '/transactions.json', array(
+            'transaction' => $transaction->toArray(),
+        ));
+        $response = $this->send($request);
+
+        return $this->createEntity($response->get('transaction'));
     }
 }

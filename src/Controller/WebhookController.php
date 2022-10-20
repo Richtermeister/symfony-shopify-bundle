@@ -9,7 +9,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * @Route("/shopify")
+ */
 class WebhookController
 {
     /**
@@ -35,6 +39,7 @@ class WebhookController
     /**
      * @param Request $request
      * @return Response
+     * @Route("/webhooks", name="codecloud_shopify_webhooks")
      */
     public function handleWebhook(Request $request)
     {
@@ -45,23 +50,18 @@ class WebhookController
             throw new NotFoundHttpException();
         }
 
-        if (!$this->storeManager->storeExists($storeName)) {
-            throw new NotFoundHttpException();
-        }
-
         if (empty($request->getContent())) {
-            // todo log!
             throw new BadRequestHttpException('Webhook must have body content');
         }
 
         $payload = \GuzzleHttp\json_decode($request->getContent(), true);
 
-        $this->eventDispatcher->dispatch(WebhookEvent::NAME, new WebhookEvent(
+        $this->eventDispatcher->dispatch(new WebhookEvent(
             $topic,
             $storeName,
             $payload
         ));
 
-        return new Response('Shopify Webhook Received');
+        return new Response();
     }
 }
