@@ -72,7 +72,9 @@ class JwtController
         if ($request->isMethod('GET')) {
             return new Response($this->templating->render('@CodeCloudShopify/jwt.html.twig', [
                 'shop' => $request->query->get('shop'),
-            ]));
+            ]), Response::HTTP_OK, [
+                'Content-Type' => 'text/html',
+            ]);
         }
 
         if (!$jwt = $request->request->get('jwt')) {
