@@ -11,6 +11,6 @@ class FrameBusterRedirectResponse extends Response
         parent::__construct('<script>
     window.top.location.href = "'.$url.'";
 </script>
-', Response::HTTP_OK, ['Content-Type', 'text/html']);
+', Response::HTTP_OK, ['Content-Type' => 'text/html']);
     }
 }
