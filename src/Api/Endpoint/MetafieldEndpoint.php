@@ -10,6 +10,18 @@ use CodeCloud\Bundle\ShopifyBundle\Api\GenericResource;
 class MetafieldEndpoint extends AbstractEndpoint
 {
     /**
+     * @param int $customerId
+     * @param array $query
+     * @return array|\CodeCloud\Bundle\ShopifyBundle\Api\GenericResource[]
+     */
+    public function findCustomerMetafields($customerId, array $query = array())
+    {
+        $request = new GetJson('/admin/customers/' . $customerId . '/metafields.json', $query);
+        $response = $this->sendPaged($request, 'metafields');
+        return $this->createCollection($response);
+    }
+
+    /**
      * @param array $query
      * @return array|\CodeCloud\Bundle\ShopifyBundle\Api\GenericResource[]
      */
@@ -64,6 +76,17 @@ class MetafieldEndpoint extends AbstractEndpoint
      * @param int $metafieldId
      * @return \CodeCloud\Bundle\ShopifyBundle\Api\GenericResource
      */
+    public function findOneCustomerMetafield($metafieldId, $customerId)
+    {
+        $request = new GetJson('/admin/customers/' . $customerId . '/metafields/' . $metafieldId . '.json');
+        $response = $this->send($request);
+        return $this->createEntity($response->get('metafield'));
+    }
+
+    /**
+     * @param int $metafieldId
+     * @return \CodeCloud\Bundle\ShopifyBundle\Api\GenericResource
+     */
     public function findOneStoreMetafield($metafieldId)
     {
         $request = new GetJson('/admin/metafields/' . $metafieldId . '.json');
@@ -81,6 +104,17 @@ class MetafieldEndpoint extends AbstractEndpoint
         $request = new GetJson('/admin/products/' . $productId . '/metafields/' . $metafieldId . '.json');
         $response = $this->send($request);
         return $this->createEntity($response->get('metafield'));
+    }
+
+    /**
+     * @param int $customerId
+     * @return int
+     */
+    public function countByCustomer($customerId)
+    {
+        $request = new GetJson('/admin/customers/' . $customerId . '/metafields/count.json');
+        $response = $this->send($request);
+        return $response->get('count');
     }
 
     /**
@@ -105,12 +139,36 @@ class MetafieldEndpoint extends AbstractEndpoint
     }
 
     /**
+     * @param int $customerId
+     * @param GenericResource $metafield
+     * @return \CodeCloud\Bundle\ShopifyBundle\Api\GenericResource
+     */
+    public function createCustomerMetafield($customerId, GenericResource $metafield)
+    {
+        $request = new PostJson('/admin/customers/' . $customerId . '/metafields.json', array('metafield' => $metafield->toArray()));
+        $response = $this->send($request);
+        return $this->createEntity($response->get('metafield'));
+    }
+
+    /**
      * @param GenericResource $metafield
      * @return \CodeCloud\Bundle\ShopifyBundle\Api\GenericResource
      */
     public function createStoreMetafield(GenericResource $metafield)
     {
         $request = new PostJson('/admin/metafields.json', array('metafield' => $metafield->toArray()));
+        $response = $this->send($request);
+        return $this->createEntity($response->get('metafield'));
+    }
+
+    /**
+     * @param int $productId
+     * @param GenericResource $metafield
+     * @return \CodeCloud\Bundle\ShopifyBundle\Api\GenericResource
+     */
+    public function createProductMetafield($productId, GenericResource $metafield)
+    {
+        $request = new PostJson('/admin/products/' . $productId . '/metafields.json', array('metafield' => $metafield->toArray()));
         $response = $this->send($request);
         return $this->createEntity($response->get('metafield'));
     }
@@ -129,21 +187,13 @@ class MetafieldEndpoint extends AbstractEndpoint
 
     /**
      * @param int $metafieldId
+     * @param int $customerId
+     * @param \CodeCloud\Bundle\ShopifyBundle\Api\GenericResource $metafield
+     * @return GenericResource
      */
-    public function deleteStoreMetafield($metafieldId)
+    public function updateCustomerMetafield($metafieldId, $customerId, GenericResource $metafield)
     {
-        $request = new DeleteParams('/admin/metafields/' . $metafieldId . '.json');
-        $this->send($request);
-    }
-
-    /**
-     * @param int $productId
-     * @param GenericResource $metafield
-     * @return \CodeCloud\Bundle\ShopifyBundle\Api\GenericResource
-     */
-    public function createProductMetafield($productId, GenericResource $metafield)
-    {
-        $request = new PostJson('/admin/products/' . $productId . '/metafields.json', array('metafield' => $metafield->toArray()));
+        $request = new PutJson('/admin/products/' . $customerId . '/metafields/' . $metafieldId . '.json', array('metafield' => $metafield->toArray()));
         $response = $this->send($request);
         return $this->createEntity($response->get('metafield'));
     }
@@ -159,6 +209,25 @@ class MetafieldEndpoint extends AbstractEndpoint
         $request = new PutJson('/admin/products/' . $productId . '/metafields/' . $metafieldId . '.json', array('metafield' => $metafield->toArray()));
         $response = $this->send($request);
         return $this->createEntity($response->get('metafield'));
+    }
+
+    /**
+     * @param int $metafieldId
+     * @param int $customerId
+     */
+    public function deleteCustomerMetafield($metafieldId, $customerId)
+    {
+        $request = new DeleteParams('/admin/customers/' . $customerId . '/metafields/' . $metafieldId . '.json');
+        $this->send($request);
+    }
+
+    /**
+     * @param int $metafieldId
+     */
+    public function deleteStoreMetafield($metafieldId)
+    {
+        $request = new DeleteParams('/admin/metafields/' . $metafieldId . '.json');
+        $this->send($request);
     }
 
     /**
