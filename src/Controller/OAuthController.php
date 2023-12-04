@@ -123,7 +123,7 @@ class OAuthController
         ]);
 
         if ($request->query->get('embedded') === '1') {
-            return new Response($this->twig->render('exit-iframe.html.twig', [
+            return new Response($this->twig->render('@CodeCloudShopify/exit-iframe.html.twig', [
                 'redirectUrl' => $url,
                 'shop' => $request->get('shop'),
                 'host' => $request->get('host'),
