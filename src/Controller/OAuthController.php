@@ -2,6 +2,7 @@
 
 namespace CodeCloud\Bundle\ShopifyBundle\Controller;
 
+use Bugsnag\Env;
 use CodeCloud\Bundle\ShopifyBundle\Event\PostAuthEvent;
 use CodeCloud\Bundle\ShopifyBundle\Event\PreAuthEvent;
 use CodeCloud\Bundle\ShopifyBundle\Exception\InsufficientScopeException;
@@ -17,6 +18,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Twig\Environment;
 
 /**
  * Handles the OAuth handshake with Shopify.
@@ -58,12 +60,18 @@ class OAuthController
     private $hmacSignature;
 
     /**
+     * @var Environment
+     */
+    private $twig;
+
+    /**
      * @param UrlGeneratorInterface $router
      * @param array $config
      * @param HttpClientInterface $client
      * @param ShopifyStoreManagerInterface $stores
      * @param EventDispatcherInterface $dispatcher
      * @param HmacSignature $hmacSignature
+     * @param Environment $twig
      */
     public function __construct(
         UrlGeneratorInterface $router,
@@ -71,7 +79,8 @@ class OAuthController
         HttpClientInterface $client,
         ShopifyStoreManagerInterface $stores,
         EventDispatcherInterface $dispatcher,
-        HmacSignature $hmacSignature
+        HmacSignature $hmacSignature,
+        Environment $twig
     ) {
         $this->router = $router;
         $this->client = $client;
@@ -82,6 +91,7 @@ class OAuthController
         ;
         $this->dispatcher = $dispatcher;
         $this->hmacSignature = $hmacSignature;
+        $this->twig = $twig;
     }
 
     /**
