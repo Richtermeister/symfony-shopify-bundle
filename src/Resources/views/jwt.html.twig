@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Shopify ShipStation{% endblock %}</title>
+    <title>{% block title %}Shopify JWT Redirect{% endblock %}</title>
     <script src="https://unpkg.com/@shopify/app-bridge"></script>
     <script src="https://unpkg.com/@shopify/app-bridge-utils"></script>
     <script>
@@ -10,7 +10,9 @@
         var createApp = AppBridge.default;
         var app = createApp({
             apiKey: '{{ shopify_api_key }}',
-            shopOrigin: '{{ shop }}'
+            shopOrigin: '{{ shop }}',
+            host: new URLSearchParams(location.search).get("host"),
+            forceRedirect: true
         });
         var Utils = window['app-bridge-utils'];
         Utils.getSessionToken(app)

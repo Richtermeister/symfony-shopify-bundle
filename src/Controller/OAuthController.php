@@ -112,7 +112,15 @@ class OAuthController
             'state'        => $nonce,
         ]);
 
-        return new FrameBusterRedirectResponse($url);
+        if ($request->query->get('embedded') === '1') {
+            return new Response($this->twig->render('exit-iframe.html.twig', [
+                'redirectUrl' => $url,
+                'shop' => $request->get('shop'),
+                'host' => $request->get('host'),
+            ]));
+        }
+
+        return new RedirectResponse($url);
     }
 
     /**
@@ -161,10 +169,10 @@ class OAuthController
             return $response;
         }
 
+        $host = base64_decode($request->get('host'));
+
         return new RedirectResponse(
-            $this->router->generate('codecloud_shopify_jwt', [
-                'shop' => $storeName,
-            ])
+            sprintf('https://%s/apps/%s', $host, $this->config['api_key']).$this->router->generate('codecloud_shopify_jwt')
         );
     }
 }
